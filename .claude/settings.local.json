@@ -1,9 +1,0 @@
-{
-  "enabledPlugins": {
-    "stripe@claude-plugins-official": true
-  },
-  "enabledMcpjsonServers": [
-    "github",
-    "postgresql"
-  ]
-}
