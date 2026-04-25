@@ -12,16 +12,17 @@
 
 ### Entregas
 
-- [ ] Inicializar projeto Next.js 14 com App Router e TypeScript 5
-- [ ] Configurar Tailwind CSS + shadcn/ui (tema, tokens de cor, tipografia)
-- [ ] Criar estrutura de pastas: `app/`, `components/`, `lib/`, `hooks/`, `types/`, `supabase/`
-- [ ] Implementar layout shell: Sidebar fixa + Header + área de conteúdo
-- [ ] Criar componente `WorkspaceSwitcher` (dropdown na sidebar, dados mockados)
-- [ ] Definir tipos TypeScript globais: `Workspace`, `Lead`, `Deal`, `Activity`, `User`
-- [ ] Configurar `eslint`, `prettier` e `tsconfig.json` strict
-- [ ] README com instruções de setup local
+- [x] Inicializar projeto Next.js 14 com App Router e TypeScript 5
+- [x] Configurar Tailwind CSS + shadcn/ui (tema, tokens de cor, tipografia)
+- [x] Criar estrutura de pastas: `app/`, `components/`, `lib/`, `hooks/`, `types/`, `supabase/`
+- [x] Implementar layout shell: Sidebar fixa + Header + área de conteúdo
+- [x] Criar componente `WorkspaceSwitcher` (dropdown na sidebar, dados mockados)
+- [x] Definir tipos TypeScript globais: `Workspace`, `Lead`, `Deal`, `Activity`, `User`
+- [x] Configurar `eslint`, `prettier` e `tsconfig.json` strict
+- [x] README com instruções de setup local
 
-**Commit final:** `feat: project setup with Next.js 14, shadcn/ui and app shell`
+**Commit final:** `feat: project setup with Next.js 14, shadcn/ui and app shell`  
+**Status:** ✅ Concluído — merged em `main`
 
 ---
 
