@@ -34,15 +34,16 @@
 
 ### Entregas
 
-- [ ] Seção Hero: título, subtítulo, CTA "Comece grátis" e imagem/mockup do produto
-- [ ] Seção Funcionalidades: cards com ícones para Kanban, Leads, Dashboard, Multi-empresa
-- [ ] Seção Planos e Preços: tabela Free vs Pro com lista de features e botão de upgrade
-- [ ] Seção CTA final: chamada para ação com formulário de e-mail ou botão de cadastro
-- [ ] Footer: links e copyright
-- [ ] Página responsiva (mobile + desktop)
-- [ ] Rota pública `/` sem autenticação
+- [x] Seção Hero: título, subtítulo, CTA "Comece grátis" e imagem/mockup do produto
+- [x] Seção Funcionalidades: cards com ícones para Kanban, Leads, Dashboard, Multi-empresa
+- [x] Seção Planos e Preços: tabela Free vs Pro com lista de features e botão de upgrade
+- [x] Seção CTA final: chamada para ação com formulário de e-mail ou botão de cadastro
+- [x] Footer: links e copyright
+- [x] Página responsiva (mobile + desktop)
+- [x] Rota pública `/` sem autenticação
 
-**Commit final:** `feat: landing page with hero, features, pricing and CTA sections`
+**Commit final:** `feat: landing page with hero, features, pricing and CTA sections`  
+**Status:** ✅ Concluído — branch `feat/landing-page` (pendente merge em `main`)
 
 ---
 
@@ -54,17 +55,18 @@
 
 ### Entregas
 
-- [ ] Configurar projeto Supabase e variáveis de ambiente (`.env.local`)
-- [ ] Instalar e configurar Supabase client (browser) e server (SSR)
-- [ ] Configurar middleware Next.js para proteção de rotas autenticadas
-- [ ] Página `/login`: formulário e-mail + senha, link para cadastro
-- [ ] Página `/signup`: formulário de cadastro com nome, e-mail e senha
-- [ ] Página `/forgot-password`: solicitação de reset de senha
-- [ ] Callback de autenticação (`/auth/callback`) para magic links e OAuth
-- [ ] Redirect automático: usuário autenticado → `/dashboard`, não autenticado → `/login`
-- [ ] Hook `useUser()` para acesso ao usuário logado em Client Components
+- [x] Configurar projeto Supabase e variáveis de ambiente (`.env.local`)
+- [x] Instalar e configurar Supabase client (browser) e server (SSR)
+- [x] Configurar middleware Next.js para proteção de rotas autenticadas
+- [x] Página `/login`: formulário e-mail + senha, link para cadastro
+- [x] Página `/signup`: formulário de cadastro com nome, e-mail e senha
+- [x] Página `/forgot-password`: solicitação de reset de senha
+- [x] Callback de autenticação (`/auth/callback`) para magic links e OAuth
+- [x] Redirect automático: usuário autenticado → `/dashboard`, não autenticado → `/login`
+- [x] Hook `useUser()` para acesso ao usuário logado em Client Components
 
-**Commit final:** `feat: authentication flow with Supabase Auth, login and signup pages`
+**Commit final:** `feat: authentication flow with Supabase Auth, login and signup pages`  
+**Status:** ✅ Concluído — branch `feat/auth` (pendente credenciais Supabase em `.env.local`)
 
 ---
 

@@ -6,7 +6,7 @@ import { Footer } from "@/components/landing/footer"
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-background">
       <HeroSection />
       <FeaturesSection />
       <PricingSection />

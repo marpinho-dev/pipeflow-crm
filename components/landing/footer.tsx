@@ -24,7 +24,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t border-border pt-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} PipeFlow CRM. Todos os direitos reservados.
+          <span suppressHydrationWarning>© {new Date().getFullYear()} PipeFlow CRM. Todos os direitos reservados.</span>
         </div>
       </div>
     </footer>

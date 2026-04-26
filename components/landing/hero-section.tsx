@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { ThemeToggle } from "@/components/shared/theme-toggle"
 
 export function HeroSection() {
   return (
@@ -13,6 +14,7 @@ export function HeroSection() {
           <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground">
             Preços
           </Link>
+          <ThemeToggle />
           <Link
             href="/login"
             className="rounded-md border border-border px-4 py-1.5 text-sm text-foreground hover:bg-accent"

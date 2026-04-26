@@ -10,7 +10,9 @@ export function ThemeToggle() {
 
   useEffect(() => setMounted(true), [])
 
-  if (!mounted) return null
+  if (!mounted) {
+    return <div className="h-8 w-8 rounded-md" />
+  }
 
   return (
     <button

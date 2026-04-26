@@ -14,9 +14,15 @@ export function WorkspaceSwitcher() {
   const [selected, setSelected] = useState(MOCK_WORKSPACES[0])
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onKeyDown={(e) => { if (e.key === "Escape") setOpen(false) }}
+    >
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label={`Workspace atual: ${selected.name}`}
         className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm hover:bg-accent transition-colors"
       >
         <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-xs font-bold text-primary-foreground">
@@ -31,12 +37,18 @@ export function WorkspaceSwitcher() {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full z-20 mt-1 w-full rounded-md border border-border bg-background shadow-md">
+          <div aria-hidden="true" className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div
+            role="listbox"
+            aria-label="Selecionar workspace"
+            className="absolute left-0 top-full z-20 mt-1 w-full rounded-md border border-border bg-background shadow-md"
+          >
             <div className="p-1">
               {MOCK_WORKSPACES.map((ws) => (
                 <button
                   key={ws.id}
+                  role="option"
+                  aria-selected={selected.id === ws.id}
                   onClick={() => { setSelected(ws); setOpen(false) }}
                   className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-accent transition-colors"
                 >
