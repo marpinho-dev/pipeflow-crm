@@ -1,29 +1,13 @@
--- Helper: returns array of workspace IDs where the current user is a member
--- SECURITY DEFINER avoids RLS recursion when used in workspace_members policies
-CREATE OR REPLACE FUNCTION get_user_workspace_ids()
-RETURNS UUID[]
-LANGUAGE sql
-SECURITY DEFINER
-STABLE
-SET search_path = public
-AS $$
-  SELECT ARRAY(
-    SELECT workspace_id
-    FROM workspace_members
-    WHERE user_id = auth.uid()
-  );
-$$;
-
 -- ─── Tables ───────────────────────────────────────────────────────────────────
 
 CREATE TABLE workspaces (
-  id                    UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  name                  TEXT        NOT NULL,
-  slug                  TEXT        NOT NULL UNIQUE,
-  plan                  TEXT        NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro')),
-  stripe_customer_id    TEXT,
+  id                     UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  name                   TEXT        NOT NULL,
+  slug                   TEXT        NOT NULL UNIQUE,
+  plan                   TEXT        NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro')),
+  stripe_customer_id     TEXT,
   stripe_subscription_id TEXT,
-  created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at             TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE workspace_members (
@@ -46,7 +30,7 @@ CREATE TABLE invites (
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- User profiles synced from auth.users
+-- User profiles synced from auth.users via trigger
 CREATE TABLE profiles (
   id         UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email      TEXT        NOT NULL,
@@ -54,6 +38,25 @@ CREATE TABLE profiles (
   avatar_url TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- ─── Helper function (must exist before policies that reference it) ────────────
+
+-- Returns array of workspace IDs where the current user is a member.
+-- SECURITY DEFINER bypasses RLS inside the function, preventing infinite recursion
+-- when this function is used inside workspace_members policies.
+CREATE OR REPLACE FUNCTION get_user_workspace_ids()
+RETURNS UUID[]
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT ARRAY(
+    SELECT workspace_id
+    FROM workspace_members
+    WHERE user_id = auth.uid()
+  );
+$$;
 
 -- ─── RLS ──────────────────────────────────────────────────────────────────────
 
