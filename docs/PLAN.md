@@ -101,17 +101,18 @@
 
 ### Entregas
 
-- [ ] Migration SQL: tabela `leads` (nome, e-mail, telefone, empresa, cargo, status, workspace_id, owner_id)
-- [ ] Página `/leads`: listagem em tabela com paginação
-- [ ] Busca por nome/e-mail/empresa (debounced, server-side)
-- [ ] Filtros: por status, responsável e data de criação
-- [ ] Modal/drawer "Novo Lead": formulário com todos os campos e validação
-- [ ] Drawer de edição de lead (reusa o mesmo formulário)
-- [ ] Confirmação de exclusão de lead
-- [ ] Controle de limite do plano Free (máx. 50 leads): bloquear criação com toast de aviso
-- [ ] Indicador de plano na UI quando limite estiver próximo (≥ 80%)
+- [x] Migration SQL: tabela `leads` (nome, e-mail, telefone, empresa, cargo, status, workspace_id, owner_id)
+- [x] Página `/leads`: listagem em tabela com paginação
+- [x] Busca por nome/e-mail/empresa (debounced, server-side via URL params)
+- [x] Filtros: por status e responsável
+- [x] Modal "Novo Lead": formulário com todos os campos e validação
+- [x] Modal de edição de lead (mesmo formulário)
+- [x] Confirmação de exclusão de lead
+- [x] Controle de limite do plano Free (máx. 50 leads): bloquear criação com aviso
+- [x] Indicador de plano na UI quando limite estiver próximo (≥ 80%)
 
-**Commit final:** `feat: leads management with full CRUD, search, filters and plan limits`
+**Commit final:** `feat: leads management with full CRUD, search, filters and plan limits`  
+**Status:** ✅ Concluído — branch `feat/leads`
 
 ---
 
