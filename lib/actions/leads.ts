@@ -4,19 +4,8 @@ import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { WORKSPACE_COOKIE } from "@/lib/constants"
-
-export const FREE_PLAN_LIMIT = 50
-
-export type LeadFormData = {
-  name: string
-  email?: string
-  phone?: string
-  company?: string
-  role?: string
-  status: "active" | "inactive" | "converted" | "lost"
-  owner_id: string
-}
+import { WORKSPACE_COOKIE, FREE_PLAN_LIMIT } from "@/lib/constants"
+import type { LeadFormData } from "@/types"
 
 export async function createLeadAction(data: LeadFormData) {
   const supabase = createClient()

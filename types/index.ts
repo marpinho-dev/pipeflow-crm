@@ -83,6 +83,16 @@ export interface Activity {
   author?: User
 }
 
+export type LeadFormData = {
+  name: string
+  email?: string
+  phone?: string
+  company?: string
+  role?: string
+  status: "active" | "inactive" | "converted" | "lost"
+  owner_id: string
+}
+
 export interface Invite {
   id: string
   workspace_id: string

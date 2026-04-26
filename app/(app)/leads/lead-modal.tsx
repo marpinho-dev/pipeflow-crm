@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { X } from "lucide-react"
-import { createLeadAction, updateLeadAction, type LeadFormData } from "@/lib/actions/leads"
+import { createLeadAction, updateLeadAction } from "@/lib/actions/leads"
+import type { LeadFormData } from "@/types"
 
 interface Profile {
   id: string

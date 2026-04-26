@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { Plus, Search, Pencil, Trash2, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { deleteLeadAction, FREE_PLAN_LIMIT } from "@/lib/actions/leads"
+import { deleteLeadAction } from "@/lib/actions/leads"
+import { FREE_PLAN_LIMIT } from "@/lib/constants"
 import { LeadModal } from "./lead-modal"
 
 interface Profile {

@@ -11,6 +11,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect("/login")
 
+  // Ensure the user has a profile row (handles users created before the trigger)
+  await supabase.from("profiles").upsert(
+    {
+      id: user.id,
+      email: user.email!,
+      name: user.user_metadata?.name ?? null,
+      avatar_url: user.user_metadata?.avatar_url ?? null,
+    },
+    { onConflict: "id", ignoreDuplicates: true }
+  )
+
   const { data: memberships } = await supabase
     .from("workspace_members")
     .select("workspace_id, role, workspaces (id, name, slug, plan, stripe_customer_id, stripe_subscription_id, created_at)")
