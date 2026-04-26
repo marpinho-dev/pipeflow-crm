@@ -78,17 +78,18 @@
 
 ### Entregas
 
-- [ ] Migration SQL: tabelas `workspaces`, `workspace_members`, `invites` com RLS
-- [ ] Fluxo de onboarding pós-cadastro: criar ou entrar em workspace
-- [ ] Página `/settings/workspace`: nome, logo e plano atual do workspace
-- [ ] Página `/settings/members`: listar membros, papéis (Admin/Member) e botão de convite
-- [ ] Modal de convite: campo e-mail + papel, envio via Resend
-- [ ] Rota de aceite de convite: `/invite/[token]`
-- [ ] WorkspaceSwitcher conectado ao banco (listar workspaces do usuário)
-- [ ] Contexto de workspace ativo persistido em cookie (para SSR)
-- [ ] Política RLS: todos os dados filtrados por `workspace_id` do usuário
+- [x] Migration SQL: tabelas `workspaces`, `workspace_members`, `invites`, `profiles` com RLS
+- [x] Fluxo de onboarding pós-cadastro: criar ou entrar em workspace
+- [x] Página `/settings/workspace`: nome e plano atual do workspace
+- [x] Página `/settings/members`: listar membros, papéis (Admin/Member) e botão de convite
+- [x] Modal de convite: campo e-mail + papel, envio via Resend (graceful se sem API key)
+- [x] Rota de aceite de convite: `/invite/[token]`
+- [x] WorkspaceSwitcher conectado ao banco (listar workspaces do usuário)
+- [x] Contexto de workspace ativo persistido em cookie (para SSR)
+- [x] Política RLS: todos os dados filtrados por `workspace_id` do usuário
 
-**Commit final:** `feat: workspace management, member invites and workspace switcher`
+**Commit final:** `feat: workspace management, member invites and workspace switcher`  
+**Status:** ✅ Concluído — branch `feat/workspaces`
 
 ---
 

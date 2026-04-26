@@ -35,6 +35,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/update-password") ||
     pathname.startsWith("/auth")
 
+  // /invite routes require auth but are not part of the (app) group — exclude from dashboard redirect
+  const isInviteRoute = pathname.startsWith("/invite")
   const isPublicRoute = pathname === "/" || isAuthRoute
 
   if (!user && !isPublicRoute) {
@@ -44,7 +46,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (user && isAuthRoute && !pathname.startsWith("/auth") && !pathname.startsWith("/update-password")) {
+  if (user && isAuthRoute && !pathname.startsWith("/auth") && !pathname.startsWith("/update-password") && !isInviteRoute) {
     const url = request.nextUrl.clone()
     url.pathname = "/dashboard"
     return NextResponse.redirect(url)
