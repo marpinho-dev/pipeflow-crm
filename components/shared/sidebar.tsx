@@ -2,15 +2,19 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useState } from "react"
 import {
   LayoutDashboard,
   Users,
   Kanban,
   Settings,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { WorkspaceSwitcher } from "./workspace-switcher"
+import { ThemeToggle } from "./theme-toggle"
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -19,28 +23,26 @@ const NAV_ITEMS = [
   { href: "/settings", label: "Configurações", icon: Settings },
 ]
 
-export function Sidebar() {
+function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
   const pathname = usePathname()
 
   return (
-    <aside className="flex h-screen w-60 flex-col border-r border-border bg-background">
-      {/* Logo */}
+    <>
       <div className="flex h-14 items-center border-b border-border px-4">
         <span className="text-lg font-bold text-primary">PipeFlow</span>
         <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
       </div>
 
-      {/* Workspace switcher */}
       <div className="p-3">
         <WorkspaceSwitcher />
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-2">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
+            onClick={onNavClick}
             className={cn(
               "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               pathname === href || pathname.startsWith(href + "/")
@@ -54,13 +56,78 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* User footer */}
-      <div className="border-t border-border p-3">
+      <div className="border-t border-border p-3 space-y-1">
+        <div className="flex items-center justify-between px-3 py-1">
+          <span className="text-xs text-muted-foreground">Tema</span>
+          <ThemeToggle />
+        </div>
         <button className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
           <LogOut className="h-4 w-4" />
           Sair
         </button>
       </div>
-    </aside>
+    </>
+  )
+}
+
+export function Sidebar() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex h-screen w-60 flex-col border-r border-border bg-background">
+        <SidebarContent />
+      </aside>
+
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background px-4">
+        <div className="flex items-center">
+          <span className="text-lg font-bold text-primary">PipeFlow</span>
+          <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile drawer overlay */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/50"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={cn(
+          "md:hidden fixed top-0 left-0 z-50 flex h-screen w-64 flex-col bg-background border-r border-border transition-transform duration-200",
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="flex h-14 items-center justify-between border-b border-border px-4">
+          <div className="flex items-center">
+            <span className="text-lg font-bold text-primary">PipeFlow</span>
+            <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
+          </div>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="rounded-md p-1 text-muted-foreground hover:bg-accent"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="flex flex-1 flex-col overflow-y-auto">
+          <SidebarContent onNavClick={() => setMobileOpen(false)} />
+        </div>
+      </aside>
+    </>
   )
 }
