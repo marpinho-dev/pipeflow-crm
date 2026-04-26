@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import {
   LayoutDashboard,
@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils"
 import { WorkspaceSwitcher } from "./workspace-switcher"
 import { ThemeToggle } from "./theme-toggle"
+import { createClient } from "@/lib/supabase/client"
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -23,15 +24,31 @@ const NAV_ITEMS = [
   { href: "/settings", label: "Configurações", icon: Settings },
 ]
 
-function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
+function SidebarContent({
+  onNavClick,
+  hideHeader,
+}: {
+  onNavClick?: () => void
+  hideHeader?: boolean
+}) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push("/login")
+    router.refresh()
+  }
 
   return (
     <>
-      <div className="flex h-14 items-center border-b border-border px-4">
-        <span className="text-lg font-bold text-primary">PipeFlow</span>
-        <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
-      </div>
+      {!hideHeader && (
+        <div className="flex h-14 items-center border-b border-border px-4">
+          <span className="text-lg font-bold text-primary">PipeFlow</span>
+          <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
+        </div>
+      )}
 
       <div className="p-3">
         <WorkspaceSwitcher />
@@ -61,7 +78,10 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           <span className="text-xs text-muted-foreground">Tema</span>
           <ThemeToggle />
         </div>
-        <button className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+        <button
+          onClick={handleSignOut}
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+        >
           <LogOut className="h-4 w-4" />
           Sair
         </button>
@@ -89,6 +109,7 @@ export function Sidebar() {
         <div className="flex items-center gap-1">
           <ThemeToggle />
           <button
+            aria-label="Abrir menu"
             onClick={() => setMobileOpen(true)}
             className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
           >
@@ -100,6 +121,7 @@ export function Sidebar() {
       {/* Mobile drawer overlay */}
       {mobileOpen && (
         <div
+          aria-hidden="true"
           className="md:hidden fixed inset-0 z-40 bg-black/50"
           onClick={() => setMobileOpen(false)}
         />
@@ -118,6 +140,7 @@ export function Sidebar() {
             <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
           </div>
           <button
+            aria-label="Fechar menu"
             onClick={() => setMobileOpen(false)}
             className="rounded-md p-1 text-muted-foreground hover:bg-accent"
           >
@@ -125,7 +148,7 @@ export function Sidebar() {
           </button>
         </div>
         <div className="flex flex-1 flex-col overflow-y-auto">
-          <SidebarContent onNavClick={() => setMobileOpen(false)} />
+          <SidebarContent onNavClick={() => setMobileOpen(false)} hideHeader />
         </div>
       </aside>
     </>
