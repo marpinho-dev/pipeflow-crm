@@ -37,8 +37,8 @@ export default function SignupPage() {
         return
       }
 
-      router.push("/dashboard")
       router.refresh()
+      router.push("/dashboard")
     } finally {
       setLoading(false)
     }

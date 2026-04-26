@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 
@@ -10,6 +10,15 @@ export default function UpdatePasswordPage() {
   const [confirm, setConfirm] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [checking, setChecking] = useState(true)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) router.replace("/login")
+      else setChecking(false)
+    })
+  }, [router])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -31,12 +40,14 @@ export default function UpdatePasswordPage() {
         return
       }
 
-      router.push("/dashboard")
       router.refresh()
+      router.push("/dashboard")
     } finally {
       setLoading(false)
     }
   }
+
+  if (checking) return null
 
   return (
     <div className="rounded-xl border border-border bg-card p-8 shadow-sm">

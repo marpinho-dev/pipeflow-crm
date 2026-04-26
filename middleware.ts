@@ -3,10 +3,6 @@ import { NextResponse, type NextRequest } from "next/server"
 import { supabaseUrl, supabaseAnonKey } from "@/lib/supabase/config"
 
 export async function middleware(request: NextRequest) {
-  if (process.env.NEXT_PUBLIC_BYPASS_AUTH === "true") {
-    return NextResponse.next({ request })
-  }
-
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
@@ -44,6 +40,7 @@ export async function middleware(request: NextRequest) {
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = "/login"
+    url.searchParams.set("redirectedFrom", pathname)
     return NextResponse.redirect(url)
   }
 

@@ -11,16 +11,28 @@ export function useUser() {
 
   useEffect(() => {
     const supabase = createClient()
+    let mounted = true
+
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!mounted) return
+      if (error) setError(error)
+      setUser(data.user)
+      setLoading(false)
+    })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
+        if (!mounted) return
         setUser(session?.user ?? null)
         setError(null)
         setLoading(false)
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   return { user, loading, error }
