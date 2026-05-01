@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import {
   LayoutDashboard,
+  CheckSquare,
   Users,
   Kanban,
   Settings,
@@ -19,6 +20,7 @@ import { createClient } from "@/lib/supabase/client"
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/activities", label: "Atividades", icon: CheckSquare },
   { href: "/leads", label: "Leads", icon: Users },
   { href: "/pipeline", label: "Pipeline", icon: Kanban },
   { href: "/settings", label: "Configurações", icon: Settings },

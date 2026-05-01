@@ -250,6 +250,30 @@
 
 ---
 
+## M12 — Gestão de Atividades
+
+**Branch:** `feat/activities`
+
+**Objetivo:** Página dedicada para gerenciar todas as atividades do workspace: visualizar tarefas do dia, da semana, atrasadas e o histórico completo, com controle de conclusão e criação rápida sem sair da página.
+
+### Entregas
+
+- [ ] Migration SQL: adicionar coluna `completed` (boolean, default false) e `completed_at` (timestamptz) na tabela `activities`
+- [ ] Página `/activities`: layout com cards de resumo no topo + lista filtrada
+- [ ] Cards de resumo: contagem de atividades Atrasadas, Hoje e Esta Semana (clicáveis, filtram a lista)
+- [ ] Abas / filtro de período: **Atrasadas** · **Hoje** · **Esta semana** · **Todas**
+- [ ] Cada item da lista exibe: ícone de tipo, descrição, lead vinculado (link), responsável, data/hora agendada
+- [ ] Botão "Concluir" por atividade: marca `completed = true` e `completed_at = now()` via Server Action
+- [ ] Atividades concluídas ficam com estilo riscado/esmaecido; toggle para exibir/ocultar concluídas
+- [ ] Filtros: por tipo (ligação, e-mail, reunião, nota) e por responsável
+- [ ] Modal "Nova atividade": criar direto da página com seleção de lead (dropdown buscável)
+- [ ] Badge na sidebar com contagem de atividades atrasadas + do dia (some quando zerado)
+- [ ] Revalidar `/activities` e `/leads/[id]` após criar/concluir/excluir atividade
+
+**Commit final:** `feat: activities management page with daily, weekly and overdue views`
+
+---
+
 ## Resumo de Branches
 
 | Branch | Milestone |
@@ -265,3 +289,4 @@
 | `feat/stripe` | M9 — Monetização com Stripe |
 | `feat/onboarding` | M10 — Onboarding |
 | `feat/polish-deploy` | M11 — Polish & Deploy |
+| `feat/activities` | M12 — Gestão de Atividades |
