@@ -142,6 +142,23 @@ export async function updateMemberRoleAction(memberId: string, role: "admin" | "
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Não autenticado" }
 
+  const { data: target } = await supabase
+    .from("workspace_members")
+    .select("workspace_id")
+    .eq("id", memberId)
+    .single()
+
+  if (!target) return { error: "Membro não encontrado" }
+
+  const { data: myMembership } = await supabase
+    .from("workspace_members")
+    .select("role")
+    .eq("workspace_id", target.workspace_id)
+    .eq("user_id", user.id)
+    .single()
+
+  if (myMembership?.role !== "admin") return { error: "Apenas administradores podem alterar papéis" }
+
   const { error } = await supabase
     .from("workspace_members")
     .update({ role })
@@ -157,6 +174,24 @@ export async function removeMemberAction(memberId: string) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Não autenticado" }
+
+  const { data: target } = await supabase
+    .from("workspace_members")
+    .select("workspace_id")
+    .eq("id", memberId)
+    .single()
+
+  if (!target) return { error: "Membro não encontrado" }
+
+  const { data: myMembership } = await supabase
+    .from("workspace_members")
+    .select("role, id")
+    .eq("workspace_id", target.workspace_id)
+    .eq("user_id", user.id)
+    .single()
+
+  const isSelf = myMembership?.id === memberId
+  if (!isSelf && myMembership?.role !== "admin") return { error: "Apenas administradores podem remover membros" }
 
   const { error } = await supabase.from("workspace_members").delete().eq("id", memberId)
 

@@ -35,10 +35,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const storedId = cookies().get(WORKSPACE_COOKIE)?.value
   const activeWorkspace = workspaces.find((w) => w.id === storedId) ?? workspaces[0]
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const activeMembership = (memberships ?? []).find((m: any) => m.workspace_id === activeWorkspace.id)
+  const isAdmin = (activeMembership as any)?.role === "admin"
+
   return (
     <WorkspaceProvider workspaces={workspaces} activeWorkspace={activeWorkspace}>
       <div className="flex h-screen overflow-hidden bg-background">
-        <Sidebar />
+        <Sidebar isAdmin={isAdmin} />
         <main className="animate-page-enter flex flex-1 flex-col overflow-y-auto pt-14 md:pt-0">
           {children}
         </main>

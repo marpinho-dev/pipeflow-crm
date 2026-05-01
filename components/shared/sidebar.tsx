@@ -19,19 +19,21 @@ import { ThemeToggle } from "./theme-toggle"
 import { createClient } from "@/lib/supabase/client"
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/activities", label: "Atividades", icon: CheckSquare },
-  { href: "/leads", label: "Leads", icon: Users },
-  { href: "/pipeline", label: "Pipeline", icon: Kanban },
-  { href: "/settings", label: "Configurações", icon: Settings },
+  { href: "/dashboard",  label: "Dashboard",     icon: LayoutDashboard, adminOnly: false },
+  { href: "/activities", label: "Atividades",    icon: CheckSquare,     adminOnly: false },
+  { href: "/leads",      label: "Leads",         icon: Users,           adminOnly: false },
+  { href: "/pipeline",   label: "Pipeline",      icon: Kanban,          adminOnly: false },
+  { href: "/settings",   label: "Configurações", icon: Settings,        adminOnly: true  },
 ]
 
 function SidebarContent({
   onNavClick,
   hideHeader,
+  isAdmin,
 }: {
   onNavClick?: () => void
   hideHeader?: boolean
+  isAdmin: boolean
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -61,7 +63,7 @@ function SidebarContent({
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
+        {NAV_ITEMS.filter(item => !item.adminOnly || isAdmin).map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
@@ -96,14 +98,14 @@ function SidebarContent({
   )
 }
 
-export function Sidebar() {
+export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
     <>
       {/* Desktop sidebar */}
       <aside className="hidden md:flex h-screen w-60 flex-col border-r border-border bg-background">
-        <SidebarContent />
+        <SidebarContent isAdmin={isAdmin} />
       </aside>
 
       {/* Mobile top bar */}
@@ -162,7 +164,7 @@ export function Sidebar() {
           </button>
         </div>
         <div className="flex flex-1 flex-col overflow-y-auto">
-          <SidebarContent onNavClick={() => setMobileOpen(false)} hideHeader />
+          <SidebarContent onNavClick={() => setMobileOpen(false)} hideHeader isAdmin={isAdmin} />
         </div>
       </aside>
     </>
