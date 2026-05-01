@@ -48,11 +48,10 @@ export function DealCard({ deal, isOverlay, onEdit, onDelete }: DealCardProps) {
     onEdit()
   }
 
-  // Disable CSS transition while dragging so the card tracks the pointer immediately
-  const style: React.CSSProperties = {
-    ...(transform ? { transform: CSS.Translate.toString(transform) } : {}),
-    ...(isDragging ? { transition: "none" } : {}),
-  }
+  // When dragging, keep the original card in place as a ghost — DragOverlay handles movement
+  const style: React.CSSProperties = isDragging
+    ? { transition: "none" }
+    : (transform ? { transform: CSS.Translate.toString(transform) } : {})
 
   const formattedValue = deal.value > 0
     ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0 }).format(deal.value)
@@ -78,8 +77,8 @@ export function DealCard({ deal, isOverlay, onEdit, onDelete }: DealCardProps) {
       className={cn(
         "group relative rounded-lg border border-border bg-card p-3 text-sm select-none",
         "cursor-grab active:cursor-grabbing",
-        isDragging && "opacity-30 scale-95",
-        isOverlay && "shadow-lg ring-1 ring-border opacity-100 cursor-grabbing"
+        isDragging && !isOverlay && "opacity-30 scale-95",
+        isOverlay && "shadow-lg ring-1 ring-border cursor-grabbing"
       )}
     >
       {/* Delete — stop pointer so drag doesn't start here */}

@@ -10,6 +10,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
+import { snapCenterToCursor } from "@dnd-kit/modifiers"
 import { cn } from "@/lib/utils"
 import { KanbanColumn } from "@/components/kanban/kanban-column"
 import { DealCard } from "@/components/kanban/deal-card"
@@ -171,7 +172,7 @@ export function PipelineClient({
               </div>
             ))}
 
-            <DragOverlay dropAnimation={{ duration: 150, easing: "ease" }}>
+            <DragOverlay dropAnimation={{ duration: 150, easing: "ease" }} modifiers={[snapCenterToCursor]}>
               {activeDeal ? (
                 <DealCard
                   deal={activeDeal}
