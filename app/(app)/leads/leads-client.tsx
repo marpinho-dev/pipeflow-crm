@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import Link from "next/link"
 import { Plus, Search, Pencil, Trash2, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { deleteLeadAction } from "@/lib/actions/leads"
@@ -217,10 +218,12 @@ export function LeadsClient({
                     return (
                       <tr key={lead.id} className="hover:bg-muted/30 transition-colors">
                         <td className="px-4 py-3">
-                          <div className="font-medium text-foreground">{lead.name}</div>
-                          {lead.role && (
-                            <div className="text-xs text-muted-foreground">{lead.role}</div>
-                          )}
+                          <Link href={`/leads/${lead.id}`} className="hover:underline">
+                            <div className="font-medium text-foreground">{lead.name}</div>
+                            {lead.role && (
+                              <div className="text-xs text-muted-foreground">{lead.role}</div>
+                            )}
+                          </Link>
                         </td>
                         <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
                           {lead.company ?? "—"}

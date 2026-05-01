@@ -147,16 +147,17 @@
 
 ### Entregas
 
-- [ ] Migration SQL: tabela `activities` (tipo, descrição, autor_id, lead_id, data, workspace_id)
-- [ ] Página `/leads/[id]`: layout em duas colunas (perfil + timeline)
-- [ ] Painel esquerdo: dados completos do lead e botão de edição
-- [ ] Lista de negócios vinculados ao lead com status e valor
-- [ ] Timeline de atividades em ordem cronológica decrescente
-- [ ] Formulário inline de nova atividade: tipo (ligação, e-mail, reunião, nota), descrição e data
-- [ ] Ícones distintos por tipo de atividade
-- [ ] Edição e exclusão de atividade
+- [x] Migration SQL: tabela `activities` (tipo, descrição, autor_id, lead_id, data, workspace_id)
+- [x] Página `/leads/[id]`: layout em duas colunas (perfil + timeline)
+- [x] Painel esquerdo: dados completos do lead e botão de edição
+- [x] Lista de negócios vinculados ao lead com status e valor
+- [x] Timeline de atividades em ordem cronológica decrescente
+- [x] Formulário inline de nova atividade: tipo (ligação, e-mail, reunião, nota), descrição e data
+- [x] Ícones distintos por tipo de atividade
+- [x] Edição e exclusão de atividade
 
-**Commit final:** `feat: lead detail page with profile, linked deals and activity timeline`
+**Commit final:** `feat: lead detail page with profile, linked deals and activity timeline`  
+**Status:** ✅ Concluído — branch `feat/lead-detail`
 
 ---
 
