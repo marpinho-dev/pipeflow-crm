@@ -124,17 +124,18 @@
 
 ### Entregas
 
-- [ ] Migration SQL: tabela `deals` (título, valor, etapa, lead_id, owner_id, prazo, workspace_id)
-- [ ] Página `/pipeline`: board com 6 colunas (etapas fixas)
-- [ ] Card de negócio: título, valor (R$), lead vinculado, responsável, prazo
-- [ ] Drag-and-drop com `@dnd-kit` (DndContext + SortableContext por coluna)
-- [ ] Persistência imediata ao soltar card (Server Action ou API Route)
-- [ ] Modal "Novo Negócio": título, valor, lead (select), prazo, responsável
-- [ ] Drawer de detalhe do negócio: edição inline dos campos
-- [ ] Exclusão de negócio com confirmação
-- [ ] Filtro de responsável no topo do board
+- [x] Migration SQL: tabela `deals` (título, valor, etapa, lead_id, owner_id, prazo, workspace_id)
+- [x] Página `/pipeline`: board com 6 colunas (etapas fixas)
+- [x] Card de negócio: título, valor (R$), lead vinculado, responsável, prazo
+- [x] Drag-and-drop com `@dnd-kit` (DndContext + DragOverlay por coluna)
+- [x] Persistência imediata ao soltar card (Server Action + rollback otimista)
+- [x] Modal "Novo Negócio": título, valor, lead (select), prazo, responsável
+- [x] Drawer de detalhe do negócio: edição via clique no card (modal de edição)
+- [x] Exclusão de negócio com confirmação (botão no hover do card)
+- [x] Filtro de responsável no topo do board
 
-**Commit final:** `feat: kanban pipeline with drag-and-drop, deal CRUD and stage persistence`
+**Commit final:** `feat: kanban pipeline with drag-and-drop, deal CRUD and stage persistence`  
+**Status:** ✅ Concluído — branch `feat/leads`
 
 ---
 
@@ -167,17 +168,18 @@
 
 ### Entregas
 
-- [ ] Página `/dashboard`: grid de cards + gráfico + lista de deals próximos do prazo
-- [ ] Card: Total de Leads (no workspace)
-- [ ] Card: Negócios Abertos (excluindo Fechado Ganho/Perdido)
-- [ ] Card: Valor Total do Pipeline (soma dos deals abertos)
-- [ ] Card: Taxa de Conversão (Fechado Ganho / total de deals × 100%)
-- [ ] Gráfico de funil com Recharts (contagem de deals por etapa)
-- [ ] Lista "Negócios com prazo próximo" (próximos 7 dias, do usuário logado)
-- [ ] Queries otimizadas no servidor (Server Components, sem client fetch)
-- [ ] Estado vazio amigável para workspaces sem dados
+- [x] Página `/dashboard`: grid de cards + gráfico + lista de deals próximos do prazo
+- [x] Card: Total de Leads (no workspace)
+- [x] Card: Negócios Abertos (excluindo Fechado Ganho/Perdido)
+- [x] Card: Valor Total do Pipeline (soma dos deals abertos)
+- [x] Card: Taxa de Conversão (Fechado Ganho / total de deals × 100%)
+- [x] Gráfico de funil com Recharts (contagem de deals por etapa)
+- [x] Lista "Negócios com prazo próximo" (próximos 14 dias)
+- [x] Queries otimizadas no servidor (Server Components, sem client fetch)
+- [x] Estado vazio amigável para workspaces sem dados
 
-**Commit final:** `feat: dashboard with KPI cards, funnel chart and upcoming deals`
+**Commit final:** `feat: dashboard with KPI cards, funnel chart and upcoming deals`  
+**Status:** ✅ Concluído — branch `feat/leads` (antecipado junto ao M6)
 
 ---
 

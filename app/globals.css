@@ -57,3 +57,73 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes flowPulse {
+  0%, 100% { opacity: 0.3; transform: scaleX(0.5); }
+  50%       { opacity: 1;   transform: scaleX(1); }
+}
+
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeSlideUp 0.4s ease-out both;
+  }
+  .animate-page-enter {
+    animation: pageEnter 0.3s ease-out both;
+  }
+  .logo-flow-line {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+    border-radius: 2px;
+    animation: flowPulse 3s ease-in-out infinite;
+    pointer-events: none;
+    overflow: hidden;
+  }
+}
+
+/* ── Deal card hover by stage (border + shadow + lift) ── */
+[data-stage-card] {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+[data-stage-card="new_lead"]:hover      { transform: translateY(-2px); border-color: rgb(59 130 246 / 0.5);  box-shadow: 0 4px 14px rgb(59 130 246 / 0.15); }
+[data-stage-card="contacted"]:hover     { transform: translateY(-2px); border-color: rgb(6 182 212 / 0.5);   box-shadow: 0 4px 14px rgb(6 182 212 / 0.15); }
+[data-stage-card="proposal_sent"]:hover { transform: translateY(-2px); border-color: rgb(245 158 11 / 0.5);  box-shadow: 0 4px 14px rgb(245 158 11 / 0.15); }
+[data-stage-card="negotiation"]:hover   { transform: translateY(-2px); border-color: rgb(249 115 22 / 0.5);  box-shadow: 0 4px 14px rgb(249 115 22 / 0.15); }
+[data-stage-card="closed_won"]:hover    { transform: translateY(-2px); border-color: rgb(34 197 94 / 0.5);   box-shadow: 0 4px 14px rgb(34 197 94 / 0.15); }
+[data-stage-card="closed_lost"]:hover   { transform: translateY(-2px); border-color: rgb(239 68 68 / 0.5);   box-shadow: 0 4px 14px rgb(239 68 68 / 0.15); }
+
+/* ── Metric card glass (dark mode) ── */
+.dark .metric-card {
+  background: hsl(var(--card) / 0.55);
+  backdrop-filter: blur(12px);
+  border-color: hsl(var(--primary) / 0.1);
+}
+.dark .metric-card:hover {
+  border-color: hsl(var(--primary) / 0.35);
+  box-shadow: 0 8px 28px hsl(var(--primary) / 0.1);
+}
+
+/* ── Lead table row hover ── */
+.lead-row {
+  transition: background 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-page-enter,
+  .logo-flow-line,
+  [data-stage-card] { animation: none; transition: none; }
+}

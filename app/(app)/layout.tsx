@@ -39,7 +39,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <WorkspaceProvider workspaces={workspaces} activeWorkspace={activeWorkspace}>
       <div className="flex h-screen overflow-hidden bg-background">
         <Sidebar />
-        <main className="flex flex-1 flex-col overflow-y-auto pt-14 md:pt-0">
+        <main className="animate-page-enter flex flex-1 flex-col overflow-y-auto pt-14 md:pt-0">
           {children}
         </main>
       </div>

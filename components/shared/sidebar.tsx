@@ -45,8 +45,12 @@ function SidebarContent({
     <>
       {!hideHeader && (
         <div className="flex h-14 items-center border-b border-border px-4">
-          <span className="text-lg font-bold text-primary">PipeFlow</span>
-          <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
+          <div className="relative inline-flex items-baseline">
+            <span className="text-lg font-bold text-foreground">Pipe</span>
+            <span className="text-lg font-bold text-primary">Flow</span>
+            <div className="logo-flow-line" />
+          </div>
+          <span className="ml-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">CRM</span>
         </div>
       )}
 
@@ -63,7 +67,7 @@ function SidebarContent({
             className={cn(
               "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               pathname === href || pathname.startsWith(href + "/")
-                ? "bg-primary text-primary-foreground"
+                ? "bg-gradient-to-r from-primary/15 to-transparent text-primary font-semibold"
                 : "text-muted-foreground hover:bg-accent hover:text-foreground"
             )}
           >
@@ -103,8 +107,12 @@ export function Sidebar() {
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background px-4">
         <div className="flex items-center">
-          <span className="text-lg font-bold text-primary">PipeFlow</span>
-          <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
+          <div className="relative inline-flex items-baseline">
+            <span className="text-lg font-bold text-foreground">Pipe</span>
+            <span className="text-lg font-bold text-primary">Flow</span>
+            <div className="logo-flow-line" />
+          </div>
+          <span className="ml-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">CRM</span>
         </div>
         <div className="flex items-center gap-1">
           <ThemeToggle />
@@ -136,8 +144,12 @@ export function Sidebar() {
       >
         <div className="flex h-14 items-center justify-between border-b border-border px-4">
           <div className="flex items-center">
-            <span className="text-lg font-bold text-primary">PipeFlow</span>
-            <span className="ml-1 text-lg font-bold text-foreground">CRM</span>
+            <div className="relative inline-flex items-baseline">
+              <span className="text-lg font-bold text-foreground">Pipe</span>
+              <span className="text-lg font-bold text-primary">Flow</span>
+              <div className="logo-flow-line" />
+            </div>
+            <span className="ml-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">CRM</span>
           </div>
           <button
             aria-label="Fechar menu"
