@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts"
+import { BarChart2 } from "lucide-react"
 
 const STAGE_CONFIG = [
   { key: "new_lead",       label: "Novo Lead",         color: "#3B82F6" },
@@ -57,8 +58,10 @@ export function FunnelChart({ data }: FunnelChartProps) {
 
   if (isEmpty) {
     return (
-      <div className="flex h-[280px] items-center justify-center text-sm text-muted-foreground">
-        Nenhum negócio cadastrado ainda.
+      <div className="flex h-[280px] flex-col items-center justify-center text-center">
+        <BarChart2 className="mb-2 h-8 w-8 text-muted-foreground/30" />
+        <p className="text-sm font-medium text-muted-foreground">Nenhum negócio cadastrado</p>
+        <p className="mt-0.5 text-xs text-muted-foreground/70">O funil aparecerá quando você criar negócios no pipeline.</p>
       </div>
     )
   }

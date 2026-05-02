@@ -1,4 +1,4 @@
-import { CalendarClock } from "lucide-react"
+import { CalendarClock, CalendarCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const STAGE_COLORS: Record<string, string> = {
@@ -43,8 +43,10 @@ function daysUntil(dateStr: string): number {
 export function UpcomingDeals({ deals }: UpcomingDealsProps) {
   if (deals.length === 0) {
     return (
-      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-        Sem negócios com prazo próximo.
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <CalendarCheck className="mb-2 h-8 w-8 text-muted-foreground/30" />
+        <p className="text-sm font-medium text-muted-foreground">Sem prazos próximos</p>
+        <p className="mt-0.5 text-xs text-muted-foreground/70">Negócios com prazo nos próximos 14 dias aparecem aqui.</p>
       </div>
     )
   }

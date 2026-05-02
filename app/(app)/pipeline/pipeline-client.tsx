@@ -16,6 +16,7 @@ import { KanbanColumn } from "@/components/kanban/kanban-column"
 import { DealCard } from "@/components/kanban/deal-card"
 import { DealModal } from "@/components/kanban/deal-modal"
 import { updateDealStageAction, deleteDealAction } from "./actions"
+import { Kanban } from "lucide-react"
 
 export const STAGES = [
   { key: "new_lead",       label: "Novo Lead",          color: "#3B82F6" },
@@ -154,6 +155,15 @@ export function PipelineClient({
 
       {/* Board */}
       <div className="flex-1 overflow-x-auto">
+        {deals.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full py-20 text-center px-4">
+            <Kanban className="mb-4 h-12 w-12 text-muted-foreground/30" />
+            <p className="text-base font-semibold text-foreground">Nenhum negócio ainda</p>
+            <p className="mt-1.5 text-sm text-muted-foreground max-w-xs">
+              Crie seu primeiro negócio clicando no botão + em qualquer coluna do pipeline.
+            </p>
+          </div>
+        ) : (
         <div className="kanban-board flex gap-4 p-6 min-w-max">
           <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             {STAGES.map((stage, i) => (
@@ -184,6 +194,7 @@ export function PipelineClient({
             </DragOverlay>
           </DndContext>
         </div>
+        )}
       </div>
 
       {/* Modal */}

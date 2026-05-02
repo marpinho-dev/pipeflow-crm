@@ -182,15 +182,15 @@ export function ActivitiesClient({ activities, leads, memberProfiles, currentUse
       </div>
 
       {/* Filters bar */}
-      <div className="flex flex-wrap items-center gap-3 border-b border-border bg-background px-4 sm:px-6 py-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 border-b border-border bg-background px-4 sm:px-6 py-3 overflow-x-auto">
         {/* Period tabs */}
-        <div className="flex rounded-md border border-input overflow-hidden">
+        <div className="flex shrink-0 rounded-md border border-input overflow-hidden">
           {PERIOD_TABS.map(t => (
             <button
               key={t.key}
               onClick={() => setPeriod(t.key)}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
+                "flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium transition-colors whitespace-nowrap",
                 period === t.key
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-accent hover:text-foreground"

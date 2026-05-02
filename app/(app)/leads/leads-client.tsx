@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Plus, Search, Pencil, Trash2, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, AlertTriangle, ChevronLeft, ChevronRight, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { deleteLeadAction } from "@/lib/actions/leads"
 import { FREE_PLAN_LIMIT } from "@/lib/constants"
@@ -206,10 +206,28 @@ export function LeadsClient({
               <tbody className="divide-y divide-border">
                 {leads.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                      {filters.q || filters.status || filters.owner
-                        ? "Nenhum lead encontrado com os filtros aplicados."
-                        : "Nenhum lead ainda. Clique em \"Novo lead\" para começar."}
+                    <td colSpan={7}>
+                      {filters.q || filters.status || filters.owner ? (
+                        <div className="flex flex-col items-center justify-center py-14 text-center">
+                          <Search className="mb-3 h-8 w-8 text-muted-foreground/40" />
+                          <p className="text-sm font-medium text-foreground">Nenhum lead encontrado</p>
+                          <p className="mt-1 text-xs text-muted-foreground">Tente ajustar os filtros de busca.</p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-14 text-center">
+                          <Users className="mb-3 h-10 w-10 text-muted-foreground/30" />
+                          <p className="text-sm font-medium text-foreground">Nenhum lead ainda</p>
+                          <p className="mt-1 text-xs text-muted-foreground">Comece adicionando seu primeiro contato.</p>
+                          <button
+                            onClick={() => setModalLead("new")}
+                            disabled={atLimit}
+                            className="mt-4 flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
+                          >
+                            <Plus className="h-3.5 w-3.5" />
+                            Novo lead
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ) : (
