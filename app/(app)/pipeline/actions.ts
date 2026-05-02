@@ -14,7 +14,19 @@ export type DealFormData = {
   owner_id: string
 }
 
+const VALID_STAGES = ["new_lead", "contacted", "proposal_sent", "negotiation", "closed_won", "closed_lost"] as const
+
 export async function createDealAction(data: DealFormData) {
+  if (!data.title || data.title.trim().length < 1 || data.title.length > 255) {
+    return { error: "Título deve ter entre 1 e 255 caracteres" }
+  }
+  if (!VALID_STAGES.includes(data.stage as typeof VALID_STAGES[number])) {
+    return { error: "Etapa inválida" }
+  }
+  if (data.value != null && (data.value < 0 || data.value > 999_999_999.99)) {
+    return { error: "Valor fora do intervalo permitido" }
+  }
+
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Não autenticado" }
@@ -38,6 +50,16 @@ export async function createDealAction(data: DealFormData) {
 }
 
 export async function updateDealAction(dealId: string, data: DealFormData) {
+  if (!data.title || data.title.trim().length < 1 || data.title.length > 255) {
+    return { error: "Título deve ter entre 1 e 255 caracteres" }
+  }
+  if (!VALID_STAGES.includes(data.stage as typeof VALID_STAGES[number])) {
+    return { error: "Etapa inválida" }
+  }
+  if (data.value != null && (data.value < 0 || data.value > 999_999_999.99)) {
+    return { error: "Valor fora do intervalo permitido" }
+  }
+
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Não autenticado" }
@@ -57,7 +79,14 @@ export async function updateDealAction(dealId: string, data: DealFormData) {
 }
 
 export async function updateDealStageAction(dealId: string, stage: string) {
+  if (!VALID_STAGES.includes(stage as typeof VALID_STAGES[number])) {
+    return { error: "Etapa inválida" }
+  }
+
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Não autenticado" }
+
   const { error } = await supabase.from("deals").update({ stage }).eq("id", dealId)
   if (error) return { error: error.message }
   revalidatePath("/pipeline")
@@ -66,6 +95,9 @@ export async function updateDealStageAction(dealId: string, stage: string) {
 
 export async function deleteDealAction(dealId: string) {
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Não autenticado" }
+
   const { error } = await supabase.from("deals").delete().eq("id", dealId)
   if (error) return { error: error.message }
   revalidatePath("/pipeline")

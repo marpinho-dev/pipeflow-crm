@@ -6,12 +6,25 @@ import { createClient } from "@/lib/supabase/server"
 import { WORKSPACE_COOKIE } from "@/lib/constants"
 import type { ActivityType } from "@/types"
 
+const VALID_ACTIVITY_TYPES: ActivityType[] = ["call", "email", "meeting", "note"]
+
 export async function createActivityAction(data: {
   leadId: string
   type: ActivityType
   description: string
   activityDate: string
 }) {
+  if (!VALID_ACTIVITY_TYPES.includes(data.type)) {
+    return { error: "Tipo de atividade inválido" }
+  }
+  const trimmedDescription = data.description?.trim() ?? ""
+  if (trimmedDescription.length < 1 || trimmedDescription.length > 5000) {
+    return { error: "Descrição deve ter entre 1 e 5000 caracteres" }
+  }
+  if (!data.activityDate || isNaN(Date.parse(data.activityDate))) {
+    return { error: "Data inválida" }
+  }
+
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Não autenticado" }
@@ -24,7 +37,7 @@ export async function createActivityAction(data: {
     lead_id: data.leadId,
     author_id: user.id,
     type: data.type,
-    description: data.description.trim(),
+    description: trimmedDescription,
     activity_date: data.activityDate,
   })
 

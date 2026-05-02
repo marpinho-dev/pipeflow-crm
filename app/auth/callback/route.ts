@@ -8,8 +8,14 @@ export async function GET(request: Request) {
   const code = searchParams.get("code")
 
   const rawNext = searchParams.get("next") ?? "/dashboard"
-  // Previne open redirect: aceita apenas caminhos internos
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard"
+  // Previne open redirect: valida que o destino pertence à mesma origem
+  let next = "/dashboard"
+  try {
+    const resolved = new URL(rawNext, origin)
+    if (resolved.origin === origin) next = resolved.pathname + resolved.search
+  } catch {
+    // rawNext inválido — mantém /dashboard
+  }
 
   if (code) {
     const cookieStore = cookies()
