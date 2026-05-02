@@ -111,13 +111,15 @@ export async function inviteMemberAction(
   const inviteUrl = `${APP_URL}/invite/${invite.token}`
 
   if (resend && workspace) {
-    await resend.emails.send({
-      from: "PipeFlow CRM <noreply@pipeflowcrm.com>",
+    const { data: emailData, error: emailError } = await resend.emails.send({
+      from: "PipeFlow CRM <onboarding@resend.dev>",
       to: email,
       subject: `Você foi convidado para ${workspace.name}`,
       html: inviteEmailHtml({ workspaceName: workspace.name, inviterName, role, inviteUrl }),
       text: inviteEmailText({ workspaceName: workspace.name, inviterName, role, inviteUrl }),
     })
+    if (emailError) console.error("[Resend] Erro ao enviar convite:", emailError)
+    else console.log("[Resend] E-mail enviado:", emailData?.id)
   }
 
   revalidatePath("/settings/members")
