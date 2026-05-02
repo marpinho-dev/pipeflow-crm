@@ -39,10 +39,19 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const activeMembership = (memberships ?? []).find((m: any) => m.workspace_id === activeWorkspace.id)
   const isAdmin = (activeMembership as any)?.role === "admin"
 
+  // Badge: atividades atrasadas + de hoje não concluídas
+  const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999)
+  const { count: activityBadge } = await supabase
+    .from("activities")
+    .select("*", { count: "exact", head: true })
+    .eq("workspace_id", activeWorkspace.id)
+    .eq("completed", false)
+    .lte("activity_date", todayEnd.toISOString())
+
   return (
     <WorkspaceProvider workspaces={workspaces} activeWorkspace={activeWorkspace}>
       <div className="flex h-screen overflow-hidden bg-background">
-        <Sidebar isAdmin={isAdmin} />
+        <Sidebar isAdmin={isAdmin} activityBadge={activityBadge ?? 0} />
         <main className="animate-page-enter flex flex-1 flex-col overflow-y-auto pt-14 md:pt-0">
           {children}
         </main>

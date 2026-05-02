@@ -19,21 +19,23 @@ import { ThemeToggle } from "./theme-toggle"
 import { createClient } from "@/lib/supabase/client"
 
 const NAV_ITEMS = [
-  { href: "/dashboard",  label: "Dashboard",     icon: LayoutDashboard, adminOnly: false },
-  { href: "/activities", label: "Atividades",    icon: CheckSquare,     adminOnly: false },
-  { href: "/leads",      label: "Leads",         icon: Users,           adminOnly: false },
-  { href: "/pipeline",   label: "Pipeline",      icon: Kanban,          adminOnly: false },
-  { href: "/settings",   label: "Configurações", icon: Settings,        adminOnly: true  },
+  { href: "/dashboard",  label: "Dashboard",     icon: LayoutDashboard, adminOnly: false, badgeKey: null         },
+  { href: "/activities", label: "Atividades",    icon: CheckSquare,     adminOnly: false, badgeKey: "activities" },
+  { href: "/leads",      label: "Leads",         icon: Users,           adminOnly: false, badgeKey: null         },
+  { href: "/pipeline",   label: "Pipeline",      icon: Kanban,          adminOnly: false, badgeKey: null         },
+  { href: "/settings",   label: "Configurações", icon: Settings,        adminOnly: true,  badgeKey: null         },
 ]
 
 function SidebarContent({
   onNavClick,
   hideHeader,
   isAdmin,
+  activityBadge,
 }: {
-  onNavClick?: () => void
-  hideHeader?: boolean
-  isAdmin: boolean
+  onNavClick?:    () => void
+  hideHeader?:    boolean
+  isAdmin:        boolean
+  activityBadge:  number
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -63,22 +65,34 @@ function SidebarContent({
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
-        {NAV_ITEMS.filter(item => !item.adminOnly || isAdmin).map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            onClick={onNavClick}
-            className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              pathname === href || pathname.startsWith(href + "/")
-                ? "bg-gradient-to-r from-primary/15 to-transparent text-primary font-semibold"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground"
-            )}
-          >
-            <Icon className="h-4 w-4" />
-            {label}
-          </Link>
-        ))}
+        {NAV_ITEMS.filter(item => !item.adminOnly || isAdmin).map(({ href, label, icon: Icon, badgeKey }) => {
+          const active = pathname === href || pathname.startsWith(href + "/")
+          const badge  = badgeKey === "activities" && activityBadge > 0 ? activityBadge : 0
+          return (
+            <Link
+              key={href}
+              href={href}
+              onClick={onNavClick}
+              className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                active
+                  ? "bg-gradient-to-r from-primary/15 to-transparent text-primary font-semibold"
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              <span className="flex-1">{label}</span>
+              {badge > 0 && (
+                <span className={cn(
+                  "rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none",
+                  active ? "bg-primary/30 text-primary" : "bg-red-500 text-white"
+                )}>
+                  {badge > 99 ? "99+" : badge}
+                </span>
+              )}
+            </Link>
+          )
+        })}
       </nav>
 
       <div className="border-t border-border p-3 space-y-1">
@@ -98,14 +112,14 @@ function SidebarContent({
   )
 }
 
-export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
+export function Sidebar({ isAdmin, activityBadge = 0 }: { isAdmin: boolean; activityBadge?: number }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
     <>
       {/* Desktop sidebar */}
       <aside className="hidden md:flex h-screen w-60 flex-col border-r border-border bg-background">
-        <SidebarContent isAdmin={isAdmin} />
+        <SidebarContent isAdmin={isAdmin} activityBadge={activityBadge} />
       </aside>
 
       {/* Mobile top bar */}
@@ -164,7 +178,7 @@ export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
           </button>
         </div>
         <div className="flex flex-1 flex-col overflow-y-auto">
-          <SidebarContent onNavClick={() => setMobileOpen(false)} hideHeader isAdmin={isAdmin} />
+          <SidebarContent onNavClick={() => setMobileOpen(false)} hideHeader isAdmin={isAdmin} activityBadge={activityBadge} />
         </div>
       </aside>
     </>
