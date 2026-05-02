@@ -16,8 +16,7 @@ export default async function ActivitiesPage() {
       .from("activities")
       .select(`
         id, type, description, activity_date, completed, completed_at, lead_id, author_id,
-        lead:leads(id, name),
-        author:profiles(id, name, email)
+        lead:leads(id, name)
       `)
       .eq("workspace_id", workspaceId)
       .order("activity_date", { ascending: false })

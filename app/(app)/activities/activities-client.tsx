@@ -28,7 +28,6 @@ interface Activity {
   lead_id: string
   author_id: string
   lead?: { id: string; name: string } | null
-  author?: { id: string; name: string | null; email: string } | null
 }
 
 interface Lead    { id: string; name: string }
@@ -87,6 +86,10 @@ function classifyActivity(a: Activity): Period[] {
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
   return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
+}
+
+function resolveAuthor(authorId: string, profiles: Profile[]) {
+  return profiles.find(p => p.id === authorId) ?? null
 }
 
 export function ActivitiesClient({ activities, leads, memberProfiles, currentUserId }: Props) {
@@ -256,6 +259,7 @@ export function ActivitiesClient({ activities, leads, memberProfiles, currentUse
           filtered.map(activity => {
             const Icon = TYPE_ICONS[activity.type]
             const isOverdue = !activity.completed && new Date(activity.activity_date) < todayRange().start
+            const author = resolveAuthor(activity.author_id, memberProfiles)
 
             return (
               <div
@@ -282,8 +286,8 @@ export function ActivitiesClient({ activities, leads, memberProfiles, currentUse
                         {activity.lead.name}
                       </Link>
                     )}
-                    {activity.author && (
-                      <span>{activity.author.name ?? activity.author.email}</span>
+                    {author && (
+                      <span>{author.name ?? author.email}</span>
                     )}
                     <span className={cn(isOverdue && "text-red-500 font-medium")}>
                       {formatDate(activity.activity_date)}
@@ -381,7 +385,7 @@ function NewActivityModal({
         completed: false, completed_at: null,
         lead_id: leadId, author_id: currentUserId,
         lead: selectedLead ?? null,
-      })
+      } as Activity)
     } finally { setLoading(false) }
   }
 
