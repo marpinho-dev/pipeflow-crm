@@ -85,7 +85,7 @@ export function DealCard({ deal, isOverlay, onEdit, onDelete }: DealCardProps) {
       <button
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => { e.stopPropagation(); onDelete() }}
-        className="absolute right-2 top-2 hidden rounded p-0.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive group-hover:flex"
+        className="absolute right-2 top-2 flex rounded p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive md:hidden md:group-hover:flex"
         aria-label="Excluir negócio"
       >
         <Trash2 className="h-3.5 w-3.5" />

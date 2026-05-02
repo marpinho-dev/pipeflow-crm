@@ -146,22 +146,22 @@ export function ActivitiesClient({ activities, leads, memberProfiles, currentUse
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border bg-background px-6 py-4">
+      <div className="flex items-center justify-between border-b border-border bg-background px-4 sm:px-6 py-4">
         <div>
-          <h1 className="text-xl font-semibold">Atividades</h1>
+          <h1 className="text-lg sm:text-xl font-semibold">Atividades</h1>
           <p className="text-sm text-muted-foreground">Gerencie ligações, e-mails, reuniões e notas</p>
         </div>
         <button
           onClick={() => setModal(true)}
-          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
+          className="flex items-center gap-2 rounded-md bg-primary px-3 sm:px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
         >
           <Plus className="h-4 w-4" />
-          Nova atividade
+          <span className="hidden sm:inline">Nova atividade</span>
         </button>
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4 border-b border-border bg-muted/20 px-6 py-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 border-b border-border bg-muted/20 px-4 sm:px-6 py-4">
         {[
           { key: "overdue" as Period, label: "Atrasadas",   color: "text-red-500",   bg: "bg-red-500/10",   count: counts.overdue },
           { key: "today"  as Period, label: "Hoje",        color: "text-amber-500", bg: "bg-amber-500/10", count: counts.today   },
@@ -182,7 +182,7 @@ export function ActivitiesClient({ activities, leads, memberProfiles, currentUse
       </div>
 
       {/* Filters bar */}
-      <div className="flex flex-wrap items-center gap-3 border-b border-border bg-background px-6 py-3">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border bg-background px-4 sm:px-6 py-3">
         {/* Period tabs */}
         <div className="flex rounded-md border border-input overflow-hidden">
           {PERIOD_TABS.map(t => (
@@ -248,7 +248,7 @@ export function ActivitiesClient({ activities, leads, memberProfiles, currentUse
       </div>
 
       {/* Activity list */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <CheckCircle2 className="h-10 w-10 text-muted-foreground/40 mb-3" />
@@ -296,7 +296,7 @@ export function ActivitiesClient({ activities, leads, memberProfiles, currentUse
                 </div>
 
                 {/* Actions */}
-                <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex shrink-0 items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => optimisticComplete(activity.id, !activity.completed)}
                     disabled={isPending}

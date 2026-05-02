@@ -79,7 +79,7 @@ export default async function DashboardPage() {
   return (
     <>
       <Header title="Dashboard" description="Visão geral do seu pipeline de vendas" />
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-4 sm:p-6">
         <MetricCards
           totalLeads={totalLeads ?? 0}
           openDeals={openDeals.length}

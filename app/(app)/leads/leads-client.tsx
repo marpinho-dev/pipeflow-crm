@@ -116,7 +116,7 @@ export function LeadsClient({
   return (
     <>
       {/* Header */}
-      <div className="flex h-14 items-center justify-between border-b border-border bg-background px-6">
+      <div className="flex h-14 items-center justify-between border-b border-border bg-background px-4 sm:px-6">
         <div>
           <h1 className="text-lg font-semibold leading-none">Leads</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
@@ -134,7 +134,7 @@ export function LeadsClient({
         </button>
       </div>
 
-      <div className="p-6 space-y-4">
+      <div className="p-4 sm:p-6 space-y-4">
         {/* Plan limit banners */}
         {atLimit && (
           <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
@@ -155,7 +155,7 @@ export function LeadsClient({
 
         {/* Filters */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="relative flex-1 max-w-sm">
+          <div className="relative w-full sm:flex-1 sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
@@ -249,14 +249,14 @@ export function LeadsClient({
                           <div className="flex items-center gap-1 justify-end">
                             <button
                               onClick={() => setModalLead(lead)}
-                              className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+                              className="rounded p-2 sm:p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
                               aria-label="Editar lead"
                             >
                               <Pencil className="h-3.5 w-3.5" />
                             </button>
                             <button
                               onClick={() => setDeleteTarget(lead)}
-                              className="rounded p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                              className="rounded p-2 sm:p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                               aria-label="Excluir lead"
                             >
                               <Trash2 className="h-3.5 w-3.5" />

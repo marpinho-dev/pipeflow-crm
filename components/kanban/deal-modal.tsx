@@ -126,7 +126,7 @@ export function DealModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Value */}
             <div>
               <label className="mb-1.5 block text-sm font-medium">Valor (R$)</label>

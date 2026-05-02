@@ -130,7 +130,7 @@ export function PipelineClient({
   return (
     <div className="flex flex-col h-full">
       {/* Filter bar */}
-      <div className="flex items-center gap-3 border-b border-border bg-background px-6 py-3">
+      <div className="flex flex-wrap items-center gap-3 border-b border-border bg-background px-4 sm:px-6 py-3">
         <span className="text-sm text-muted-foreground">Responsável:</span>
         <select
           value={ownerFilter}

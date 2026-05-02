@@ -246,7 +246,7 @@ export function LeadDetailClient({
   return (
     <>
       {/* Top bar */}
-      <div className="flex h-14 items-center gap-3 border-b border-border bg-background px-6">
+      <div className="flex h-14 items-center gap-3 border-b border-border bg-background px-4 sm:px-6">
         <Link
           href="/leads"
           className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -258,9 +258,9 @@ export function LeadDetailClient({
         <span className="text-sm font-medium text-foreground truncate">{lead.name}</span>
       </div>
 
-      <div className="flex h-[calc(100vh-3.5rem-3.5rem)] overflow-hidden">
+      <div className="flex flex-col overflow-auto md:flex-row md:h-[calc(100vh-3.5rem-3.5rem)] md:overflow-hidden">
         {/* Left panel — profile + deals */}
-        <aside className="w-80 shrink-0 overflow-y-auto border-r border-border bg-card p-5 space-y-5">
+        <aside className="w-full shrink-0 border-b border-border bg-card p-5 space-y-5 md:w-80 md:border-b-0 md:border-r md:overflow-y-auto">
           {/* Lead profile */}
           <div className="space-y-4">
             <div className="flex items-start justify-between">
@@ -354,7 +354,7 @@ export function LeadDetailClient({
         </aside>
 
         {/* Right panel — activity timeline */}
-        <main className="flex-1 overflow-y-auto p-6 space-y-4">
+        <main className="flex-1 p-4 sm:p-6 space-y-4 md:overflow-y-auto">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Atividades</h2>
             {!showNewActivity && (
@@ -433,7 +433,7 @@ export function LeadDetailClient({
                           </div>
 
                           {(activity.author_id === currentUserId || isAdmin) && (
-                            <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex shrink-0 items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                               <button
                                 onClick={() => setEditingActivity(activity)}
                                 className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"

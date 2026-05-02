@@ -6,7 +6,7 @@ interface HeaderProps {
 
 export function Header({ title, description, actions }: HeaderProps) {
   return (
-    <div className="flex h-14 items-center justify-between border-b border-border bg-background px-6">
+    <div className="flex h-14 items-center justify-between border-b border-border bg-background px-4 sm:px-6">
       <div>
         <h1 className="text-lg font-semibold leading-none">{title}</h1>
         {description && (
