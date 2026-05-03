@@ -89,7 +89,8 @@ export async function updateDealStageAction(dealId: string, stage: string) {
 
   const { error } = await supabase.from("deals").update({ stage }).eq("id", dealId)
   if (error) return { error: error.message }
-  revalidatePath("/pipeline")
+  // Sem revalidatePath: o estado é gerenciado otimisticamente no cliente.
+  // O pipeline re-fetch automaticamente na próxima navegação (página dinâmica).
   return {}
 }
 
