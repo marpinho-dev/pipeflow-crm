@@ -35,11 +35,8 @@ export default async function ActivitiesPage() {
       .eq("workspace_id", workspaceId),
   ])
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const activities = (activitiesResult.data ?? []) as any[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const leads = (leadsResult.data ?? []) as any[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const memberProfiles = (membersResult.data ?? []).map((m: any) => m.profiles).filter(Boolean) as any[]
 
   return (

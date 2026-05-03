@@ -27,7 +27,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .select("workspace_id, role, workspaces (id, name, slug, plan, stripe_customer_id, stripe_subscription_id, created_at)")
     .eq("user_id", user.id)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const workspaces: Workspace[] = (memberships ?? []).map((m: any) => m.workspaces).filter(Boolean)
 
   if (workspaces.length === 0) redirect("/onboarding")
@@ -35,7 +34,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const storedId = cookies().get(WORKSPACE_COOKIE)?.value
   const activeWorkspace = workspaces.find((w) => w.id === storedId) ?? workspaces[0]
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const activeMembership = (memberships ?? []).find((m: any) => m.workspace_id === activeWorkspace.id)
   const isAdmin = (activeMembership as any)?.role === "admin"
 

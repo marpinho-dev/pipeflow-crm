@@ -61,13 +61,11 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
     ? await supabase.from("profiles").select("id, name, email").in("id", memberUserIds)
     : { data: [] }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const activitiesWithAuthors = (activities ?? []).map((a: any) => ({
     ...a,
     author: authorProfiles?.find((p) => p.id === a.author_id) ?? null,
   }))
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dealsWithOwners = (deals ?? []).map((d: any) => ({
     ...d,
     owner: ownerProfiles?.find((p) => p.id === d.owner_id) ?? null,

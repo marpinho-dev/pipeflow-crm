@@ -22,7 +22,6 @@ export default async function LeadsPage({
   const offset = (page - 1) * PAGE_SIZE
 
   // Build filtered query
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query: any = supabase
     .from("leads")
     .select("*", { count: "exact" })
