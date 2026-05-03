@@ -5,27 +5,28 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-background">
       {/* Navbar */}
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-5">
         <span className="text-xl font-bold text-primary">PipeFlow</span>
-        <div className="flex items-center gap-6">
-          <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground">
+        <div className="flex items-center gap-2 sm:gap-6">
+          <Link href="#features" className="hidden sm:block text-sm text-muted-foreground hover:text-foreground">
             Funcionalidades
           </Link>
-          <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link href="#pricing" className="hidden sm:block text-sm text-muted-foreground hover:text-foreground">
             Preços
           </Link>
           <ThemeToggle />
           <Link
             href="/login"
-            className="rounded-md border border-border px-4 py-1.5 text-sm text-foreground hover:bg-accent"
+            className="rounded-md border border-border px-3 sm:px-4 py-1.5 text-sm text-foreground hover:bg-accent"
           >
             Entrar
           </Link>
           <Link
             href="/signup"
-            className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90"
+            className="rounded-md bg-primary px-3 sm:px-4 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90"
           >
-            Comece grátis
+            <span className="hidden sm:inline">Comece grátis</span>
+            <span className="sm:hidden">Cadastrar</span>
           </Link>
         </div>
       </nav>
