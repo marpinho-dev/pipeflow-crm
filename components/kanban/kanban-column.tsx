@@ -2,7 +2,6 @@
 
 import { useDroppable } from "@dnd-kit/core"
 import { Plus } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { DealCard } from "./deal-card"
 
 interface Stage {
@@ -43,11 +42,15 @@ export function KanbanColumn({ stage, deals, onAddDeal, onEditDeal, onDeleteDeal
     // Entire column is the droppable zone — including the header area
     <div
       ref={setNodeRef}
-      className={cn(
-        "flex w-72 shrink-0 flex-col rounded-xl border border-border bg-muted/30 transition-colors duration-150",
-        isOver && "border-primary/40 bg-primary/5 ring-1 ring-inset ring-primary/20"
-      )}
+      className="flex w-72 shrink-0 flex-col rounded-xl border border-border bg-muted/30 overflow-hidden transition-colors duration-150"
+      style={isOver
+        ? { borderColor: stage.color, borderWidth: "2px", background: `${stage.color}14` }
+        : undefined
+      }
     >
+      {/* Top color stripe */}
+      <div className="h-[3px] shrink-0" style={{ background: stage.color }} />
+
       {/* Column header */}
       <div className="flex items-center justify-between px-3 py-3">
         <div className="flex items-center gap-2">
