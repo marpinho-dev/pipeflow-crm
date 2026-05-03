@@ -38,7 +38,7 @@ export default async function DashboardPage() {
       .select("id, title, value, stage, due_date, lead_id")
       .eq("workspace_id", workspaceId)
       .not("due_date", "is", null)
-      .not("stage", "in", '("closed_won","closed_lost")')
+      .not("stage", "in", '("obra_finalizada","cliente_perdido")')
       .lte("due_date", fourteenDaysFromNow.toISOString().split("T")[0])
       .order("due_date", { ascending: true })
       .limit(5),
@@ -60,9 +60,9 @@ export default async function DashboardPage() {
 
   // Compute metrics from allDeals
   const deals = allDeals ?? []
-  const openDeals = deals.filter((d) => d.stage !== "closed_won" && d.stage !== "closed_lost")
-  const closedWon = deals.filter((d) => d.stage === "closed_won").length
-  const closedLost = deals.filter((d) => d.stage === "closed_lost").length
+  const openDeals = deals.filter((d) => d.stage !== "obra_finalizada" && d.stage !== "cliente_perdido")
+  const closedWon = deals.filter((d) => d.stage === "obra_finalizada").length
+  const closedLost = deals.filter((d) => d.stage === "cliente_perdido").length
   const closedTotal = closedWon + closedLost
   const conversionRate = closedTotal > 0 ? (closedWon / closedTotal) * 100 : 0
   const pipelineValue = openDeals.reduce((sum, d) => sum + (Number(d.value) || 0), 0)

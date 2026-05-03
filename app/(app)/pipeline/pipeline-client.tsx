@@ -19,12 +19,13 @@ import { updateDealStageAction, deleteDealAction } from "./actions"
 import { Kanban } from "lucide-react"
 
 export const STAGES = [
-  { key: "new_lead",       label: "Novo Lead",          color: "#3B82F6" },
-  { key: "contacted",      label: "Contato Realizado",   color: "#06B6D4" },
-  { key: "proposal_sent",  label: "Proposta Enviada",    color: "#F59E0B" },
-  { key: "negotiation",    label: "Negociação",           color: "#F97316" },
-  { key: "closed_won",     label: "Fechado Ganho",       color: "#22C55E" },
-  { key: "closed_lost",    label: "Fechado Perdido",     color: "#EF4444" },
+  { key: "novo_cliente",        label: "Novo cliente",          color: "#3B82F6" },
+  { key: "apresentar_proposta", label: "Apresentar a proposta", color: "#06B6D4" },
+  { key: "proposta_aceita",     label: "Proposta aceita",       color: "#F59E0B" },
+  { key: "obra_andamento",      label: "Obra em andamento",     color: "#F97316" },
+  { key: "obra_finalizada",     label: "Obra finalizada",       color: "#22C55E" },
+  { key: "cliente_perdido",     label: "Cliente Perdido",       color: "#EF4444" },
+  { key: "cliente_stand_by",    label: "Cliente em stand by",   color: "#64748B" },
 ]
 
 interface Profile {

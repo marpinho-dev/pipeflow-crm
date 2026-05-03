@@ -65,12 +65,13 @@ const STATUS_LABELS: Record<string, { label: string; className: string }> = {
 }
 
 const STAGE_LABELS: Record<string, string> = {
-  new_lead:       "Novo Lead",
-  contacted:      "Contato Realizado",
-  proposal_sent:  "Proposta Enviada",
-  negotiation:    "Negociação",
-  closed_won:     "Fechado Ganho",
-  closed_lost:    "Fechado Perdido",
+  novo_cliente:        "Novo cliente",
+  apresentar_proposta: "Apresentar a proposta",
+  proposta_aceita:     "Proposta aceita",
+  obra_andamento:      "Obra em andamento",
+  obra_finalizada:     "Obra finalizada",
+  cliente_perdido:     "Cliente Perdido",
+  cliente_stand_by:    "Cliente em stand by",
 }
 
 const ACTIVITY_TYPES: { value: string; label: string; icon: React.ElementType; color: string }[] = [

@@ -14,7 +14,7 @@ export type DealFormData = {
   owner_id: string
 }
 
-const VALID_STAGES = ["new_lead", "contacted", "proposal_sent", "negotiation", "closed_won", "closed_lost"] as const
+const VALID_STAGES = ["novo_cliente", "apresentar_proposta", "proposta_aceita", "obra_andamento", "obra_finalizada", "cliente_perdido", "cliente_stand_by"] as const
 
 export async function createDealAction(data: DealFormData) {
   if (!data.title || data.title.trim().length < 1 || data.title.length > 255) {

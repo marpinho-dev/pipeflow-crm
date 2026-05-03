@@ -2,21 +2,23 @@ import { CalendarClock, CalendarCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const STAGE_COLORS: Record<string, string> = {
-  new_lead:       "text-blue-500",
-  contacted:      "text-cyan-500",
-  proposal_sent:  "text-amber-500",
-  negotiation:    "text-orange-500",
-  closed_won:     "text-emerald-500",
-  closed_lost:    "text-red-500",
+  novo_cliente:        "text-blue-500",
+  apresentar_proposta: "text-cyan-500",
+  proposta_aceita:     "text-amber-500",
+  obra_andamento:      "text-orange-500",
+  obra_finalizada:     "text-emerald-500",
+  cliente_perdido:     "text-red-500",
+  cliente_stand_by:    "text-slate-500",
 }
 
 const STAGE_LABELS: Record<string, string> = {
-  new_lead:       "Novo Lead",
-  contacted:      "Contato Realizado",
-  proposal_sent:  "Proposta Enviada",
-  negotiation:    "Negociação",
-  closed_won:     "Fechado Ganho",
-  closed_lost:    "Fechado Perdido",
+  novo_cliente:        "Novo cliente",
+  apresentar_proposta: "Apresentar a proposta",
+  proposta_aceita:     "Proposta aceita",
+  obra_andamento:      "Obra em andamento",
+  obra_finalizada:     "Obra finalizada",
+  cliente_perdido:     "Cliente Perdido",
+  cliente_stand_by:    "Cliente em stand by",
 }
 
 interface UpcomingDeal {

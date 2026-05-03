@@ -6,12 +6,13 @@ import { createDealAction, updateDealAction } from "@/app/(app)/pipeline/actions
 import type { DealFormData } from "@/app/(app)/pipeline/actions"
 
 const STAGE_OPTIONS = [
-  { value: "new_lead",      label: "Novo Lead" },
-  { value: "contacted",     label: "Contato Realizado" },
-  { value: "proposal_sent", label: "Proposta Enviada" },
-  { value: "negotiation",   label: "Negociação" },
-  { value: "closed_won",    label: "Fechado Ganho" },
-  { value: "closed_lost",   label: "Fechado Perdido" },
+  { value: "novo_cliente",        label: "Novo cliente" },
+  { value: "apresentar_proposta", label: "Apresentar a proposta" },
+  { value: "proposta_aceita",     label: "Proposta aceita" },
+  { value: "obra_andamento",      label: "Obra em andamento" },
+  { value: "obra_finalizada",     label: "Obra finalizada" },
+  { value: "cliente_perdido",     label: "Cliente Perdido" },
+  { value: "cliente_stand_by",    label: "Cliente em stand by" },
 ]
 
 interface DealLike {
@@ -50,7 +51,7 @@ const INPUT_CLASS =
 
 export function DealModal({
   deal,
-  defaultStage = "new_lead",
+  defaultStage = "novo_cliente",
   leads,
   memberProfiles,
   currentUserId,

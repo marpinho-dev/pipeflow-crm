@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
-const STAGES = ["Novo Lead", "Contato Realizado", "Proposta Enviada", "Negociação", "Fechado Ganho", "Fechado Perdido"]
+const STAGES = ["Novo cliente", "Apresentar a proposta", "Proposta aceita", "Obra em andamento", "Obra finalizada", "Cliente Perdido", "Cliente em stand by"]
 
 export default function PipelineLoading() {
   return (
