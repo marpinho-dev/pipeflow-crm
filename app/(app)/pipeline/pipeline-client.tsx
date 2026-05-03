@@ -4,11 +4,15 @@ import { useState, useCallback } from "react"
 import {
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   DragOverlay,
   DragStartEvent,
   PointerSensor,
+  closestCenter,
+  pointerWithin,
   useSensor,
   useSensors,
+  type CollisionDetection,
 } from "@dnd-kit/core"
 import { snapCenterToCursor } from "@dnd-kit/modifiers"
 import { cn } from "@/lib/utils"
@@ -17,6 +21,14 @@ import { DealCard } from "@/components/kanban/deal-card"
 import { DealModal } from "@/components/kanban/deal-modal"
 import { updateDealStageAction, deleteDealAction } from "./actions"
 import { Kanban } from "lucide-react"
+
+// Detects the column under the cursor first; falls back to nearest column center.
+// This makes dropping feel immediate — as soon as the cursor enters a column it's recognized.
+const collisionDetection: CollisionDetection = (args) => {
+  const pointer = pointerWithin(args)
+  if (pointer.length > 0) return pointer
+  return closestCenter(args)
+}
 
 export const STAGES = [
   { key: "novo_cliente",        label: "Novo cliente",          color: "#3B82F6" },
@@ -66,12 +78,13 @@ export function PipelineClient({
   currentUserId,
   isAdmin,
 }: PipelineClientProps) {
-  const [deals, setDeals]         = useState<Deal[]>(initialDeals)
-  const [activeId, setActiveId]   = useState<string | null>(null)
-  const [ownerFilter, setOwner]   = useState("")
-  const [modalOpen, setModalOpen] = useState(false)
-  const [editingDeal, setEditing] = useState<Deal | null>(null)
-  const [defaultStage, setDefault]= useState("new_lead")
+  const [deals, setDeals]           = useState<Deal[]>(initialDeals)
+  const [activeId, setActiveId]     = useState<string | null>(null)
+  const [overStageId, setOverStage] = useState<string | null>(null)
+  const [ownerFilter, setOwner]     = useState("")
+  const [modalOpen, setModalOpen]   = useState(false)
+  const [editingDeal, setEditing]   = useState<Deal | null>(null)
+  const [defaultStage, setDefault]  = useState("novo_cliente")
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
@@ -108,23 +121,32 @@ export function PipelineClient({
 
   function handleDragStart(event: DragStartEvent) {
     setActiveId(event.active.id as string)
+    setOverStage(null)
+  }
+
+  function handleDragOver(event: DragOverEvent) {
+    const { over } = event
+    if (over) setOverStage(over.id as string)
   }
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     setActiveId(null)
 
-    if (!over) return
-    const dealId   = active.id as string
-    const newStage = over.id as string
-    const deal     = deals.find((d) => d.id === dealId)
+    // Use the live `over.id` or fall back to the last column we hovered (overStageId)
+    const newStage = (over?.id ?? overStageId) as string | null
+    setOverStage(null)
+
+    if (!newStage) return
+    const dealId = active.id as string
+    const deal   = deals.find((d) => d.id === dealId)
     if (!deal || deal.stage === newStage) return
 
     // Optimistic update
     setDeals((prev) => prev.map((d) => d.id === dealId ? { ...d, stage: newStage } : d))
     const result = await updateDealStageAction(dealId, newStage)
     if (result.error) {
-      // Revert
+      // Revert on server error
       setDeals((prev) => prev.map((d) => d.id === dealId ? { ...d, stage: deal.stage } : d))
     }
   }
@@ -166,7 +188,13 @@ export function PipelineClient({
           </div>
         ) : (
         <div className="kanban-board flex gap-4 p-6 min-w-max">
-          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={collisionDetection}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
             {STAGES.map((stage, i) => (
               <div
                 key={stage.key}

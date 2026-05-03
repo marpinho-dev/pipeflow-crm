@@ -40,7 +40,14 @@ export function KanbanColumn({ stage, deals, onAddDeal, onEditDeal, onDeleteDeal
     : null
 
   return (
-    <div className="flex w-72 shrink-0 flex-col rounded-xl border border-border bg-muted/30">
+    // Entire column is the droppable zone — including the header area
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "flex w-72 shrink-0 flex-col rounded-xl border border-border bg-muted/30 transition-colors duration-150",
+        isOver && "border-primary/40 bg-primary/5 ring-1 ring-inset ring-primary/20"
+      )}
+    >
       {/* Column header */}
       <div className="flex items-center justify-between px-3 py-3">
         <div className="flex items-center gap-2">
@@ -64,14 +71,8 @@ export function KanbanColumn({ stage, deals, onAddDeal, onEditDeal, onDeleteDeal
         </div>
       </div>
 
-      {/* Drop zone */}
-      <div
-        ref={setNodeRef}
-        className={cn(
-          "flex flex-1 flex-col gap-2 min-h-[120px] rounded-b-xl px-2 pb-2 transition-colors duration-200",
-          isOver && "bg-primary/5 ring-1 ring-inset ring-primary/20"
-        )}
-      >
+      {/* Cards area */}
+      <div className="flex flex-1 flex-col gap-2 min-h-[120px] rounded-b-xl px-2 pb-2">
         {deals.map((deal) => (
           <DealCard
             key={deal.id}
