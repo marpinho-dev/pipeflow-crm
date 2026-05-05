@@ -6,7 +6,7 @@ export function HeroSection() {
     <section className="relative overflow-hidden bg-background">
       {/* Navbar */}
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-5">
-        <span className="text-xl font-bold text-primary">MARP</span>
+        <span className="text-xl font-bold text-white">MARP<span className="text-sm font-normal text-primary">CRM</span></span>
         <div className="flex items-center gap-2 sm:gap-6">
           <Link href="#features" className="hidden sm:block text-sm text-muted-foreground hover:text-foreground">
             Funcionalidades
@@ -37,8 +37,8 @@ export function HeroSection() {
           Plano gratuito para sempre · Sem cartão de crédito
         </div>
         <h1 className="mx-auto max-w-3xl text-5xl font-bold leading-tight tracking-tight text-foreground">
-          O CRM simples que seu time de vendas vai{" "}
-          <span className="text-primary">realmente usar</span>
+          Venha usar o CRM do Marcinho que seu time{" "}
+          <span className="text-primary">realmente irá usar</span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
           Pipeline Kanban, gestão de leads, histórico de interações e métricas de

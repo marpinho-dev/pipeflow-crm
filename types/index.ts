@@ -28,6 +28,7 @@ export interface Workspace {
   name: string
   slug: string
   plan: Plan
+  join_code?: string
   stripe_customer_id?: string
   stripe_subscription_id?: string
   created_at: string

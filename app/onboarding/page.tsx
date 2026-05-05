@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Building2, Users, UserPlus, Kanban, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { createWorkspaceAction, inviteMemberAction } from "@/lib/actions/workspace"
+import { createWorkspaceAction, inviteMemberAction, joinWorkspaceByCodeAction } from "@/lib/actions/workspace"
 import { createOnboardingLeadAction, createOnboardingDealAction } from "./actions"
 
 const STEPS = [
@@ -16,9 +16,12 @@ const STEPS = [
 
 export default function OnboardingPage() {
   const router = useRouter()
+  const [mode, setMode]           = useState<"choose" | "create" | "join">("choose")
   const [step, setStep]           = useState(0)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState("")
+
+  const [joinCode, setJoinCode]   = useState("")
 
   const [workspaceName, setWorkspaceName] = useState("")
   const [workspaceId, setWorkspaceId]     = useState("")
@@ -34,6 +37,18 @@ export default function OnboardingPage() {
   const [dealValue, setDealValue] = useState("")
 
   function clearError() { setError("") }
+
+  async function handleJoin(e: React.FormEvent) {
+    e.preventDefault()
+    if (!joinCode.trim()) return
+    clearError(); setLoading(true)
+    try {
+      const result = await joinWorkspaceByCodeAction(joinCode.trim())
+      if (result.error) { setError(result.error); return }
+      router.push("/dashboard")
+      router.refresh()
+    } finally { setLoading(false) }
+  }
 
   function finish() {
     router.push("/dashboard")
@@ -85,6 +100,86 @@ export default function OnboardingPage() {
       if (result.error) { setError(result.error); return }
       finish()
     } finally { setLoading(false) }
+  }
+
+  if (mode === "choose") {
+    return (
+      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div className="p-8 space-y-6">
+          <div>
+            <h1 className="text-xl font-semibold">Bem-vindo ao MARP CRM</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Como você quer começar?</p>
+          </div>
+          <div className="grid gap-3">
+            <button
+              onClick={() => setMode("create")}
+              className="flex items-start gap-4 rounded-xl border border-border bg-background p-5 text-left hover:border-primary hover:bg-primary/5 transition-colors"
+            >
+              <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <p className="font-semibold text-foreground">Criar novo workspace</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">Crie um espaço para sua empresa ou projeto e convide sua equipe.</p>
+              </div>
+            </button>
+            <button
+              onClick={() => setMode("join")}
+              className="flex items-start gap-4 rounded-xl border border-border bg-background p-5 text-left hover:border-primary hover:bg-primary/5 transition-colors"
+            >
+              <UserPlus className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <p className="font-semibold text-foreground">Entrar em workspace existente</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">Use o código fornecido pelo administrador do workspace.</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (mode === "join") {
+    return (
+      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div className="p-8">
+          <form onSubmit={handleJoin} className="space-y-4">
+            <div>
+              <h1 className="text-xl font-semibold">Entrar em workspace</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Digite o código de 8 caracteres fornecido pelo administrador.
+              </p>
+            </div>
+            <div>
+              <input
+                autoFocus
+                required
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                placeholder="Ex: MARP1A2B"
+                maxLength={8}
+                className="w-full rounded-md border border-input bg-background px-3 py-2.5 font-mono text-lg tracking-widest text-center placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            {error && <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => { setMode("choose"); setError(""); setJoinCode("") }}
+                className="flex-1 rounded-md border border-input px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent"
+              >
+                Voltar
+              </button>
+              <button
+                type="submit"
+                disabled={loading || joinCode.length < 6}
+                className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
+              >
+                {loading ? "Entrando..." : "Entrar →"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )
   }
 
   return (

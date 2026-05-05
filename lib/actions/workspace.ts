@@ -57,6 +57,60 @@ export async function switchWorkspaceAction(workspaceId: string) {
   return { success: true }
 }
 
+export async function joinWorkspaceByCodeAction(code: string) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Não autenticado" }
+
+  const { data, error } = await supabase.rpc("join_workspace_by_code", { p_code: code.trim().toUpperCase() })
+  if (error) return { error: error.message }
+  if (data?.error) return { error: data.error as string }
+
+  const workspaceId = data.workspace_id as string
+  cookies().set(WORKSPACE_COOKIE, workspaceId, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  })
+
+  return { success: true }
+}
+
+export async function regenerateJoinCodeAction(workspaceId: string) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Não autenticado" }
+
+  const { data, error } = await supabase.rpc("regenerate_workspace_join_code", { p_workspace_id: workspaceId })
+  if (error) return { error: error.message }
+  if (data?.error) return { error: data.error as string }
+
+  revalidatePath("/settings/workspace")
+  return { join_code: data.join_code as string }
+}
+
+export async function deleteWorkspaceAction(workspaceId: string) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Não autenticado" }
+
+  const { data: membership } = await supabase
+    .from("workspace_members")
+    .select("role")
+    .eq("workspace_id", workspaceId)
+    .eq("user_id", user.id)
+    .single()
+
+  if (membership?.role !== "admin") return { error: "Apenas administradores podem excluir o workspace" }
+
+  const { error } = await supabase.from("workspaces").delete().eq("id", workspaceId)
+  if (error) return { error: error.message }
+
+  cookies().delete(WORKSPACE_COOKIE)
+  redirect("/dashboard")
+}
+
 export async function updateWorkspaceAction(workspaceId: string, name: string) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()

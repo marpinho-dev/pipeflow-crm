@@ -2,6 +2,9 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { WorkspaceSettingsForm } from "./workspace-settings-form"
+import { WorkspaceSelector } from "./workspace-selector"
+import { JoinCodeSection } from "./join-code-section"
+import { DeleteWorkspaceButton } from "./delete-workspace-button"
 import { WORKSPACE_COOKIE } from "@/lib/constants"
 import type { Workspace } from "@/types"
 
@@ -36,7 +39,26 @@ export default async function WorkspaceSettingsPage() {
       </div>
 
       <div className="max-w-2xl space-y-6">
+        <WorkspaceSelector />
         <WorkspaceSettingsForm workspace={workspace} isAdmin={isAdmin} />
+
+        {workspace.join_code && (
+          <JoinCodeSection
+            workspaceId={workspace.id}
+            initialCode={workspace.join_code}
+            isAdmin={isAdmin}
+          />
+        )}
+
+        {isAdmin && (
+          <div className="rounded-xl border border-destructive/40 bg-card p-6">
+            <h2 className="mb-1 text-base font-semibold text-destructive">Zona de perigo</h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Excluir o workspace é uma ação permanente e irreversível. Todos os leads, negócios, atividades e parcelas serão apagados.
+            </p>
+            <DeleteWorkspaceButton workspaceId={workspace.id} workspaceName={workspace.name} />
+          </div>
+        )}
 
         <div className="rounded-xl border border-border bg-card p-6">
           <h2 className="mb-1 text-base font-semibold text-foreground">Plano atual</h2>
