@@ -9,7 +9,7 @@ const PAGE_SIZE = 20
 export default async function LeadsPage({
   searchParams,
 }: {
-  searchParams: { q?: string; status?: string; owner?: string; page?: string }
+  searchParams: { q?: string; owner?: string; page?: string }
 }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -31,7 +31,6 @@ export default async function LeadsPage({
     const q = searchParams.q
     query = query.or(`name.ilike.%${q}%,email.ilike.%${q}%,company.ilike.%${q}%`)
   }
-  if (searchParams.status) query = query.eq("status", searchParams.status)
   if (searchParams.owner) query = query.eq("owner_id", searchParams.owner)
 
   const [
@@ -46,6 +45,22 @@ export default async function LeadsPage({
     supabase.from("workspaces").select("plan").eq("id", workspaceId).single(),
   ])
 
+  // Fetch deal stage for each lead (most recent deal)
+  const leadIds = (leads ?? []).map((l: { id: string }) => l.id)
+  const { data: dealsForLeads } = leadIds.length > 0
+    ? await supabase
+        .from("deals")
+        .select("lead_id, stage")
+        .in("lead_id", leadIds)
+        .eq("workspace_id", workspaceId)
+        .order("created_at", { ascending: false })
+    : { data: [] }
+
+  const leadStageMap = new Map<string, string>()
+  for (const deal of dealsForLeads ?? []) {
+    if (!leadStageMap.has(deal.lead_id)) leadStageMap.set(deal.lead_id, deal.stage)
+  }
+
   // Fetch profiles for lead owners
   const ownerIds = Array.from(new Set((leads ?? []).map((l: { owner_id: string }) => l.owner_id)))
   const { data: ownerProfiles } = ownerIds.length > 0
@@ -58,9 +73,10 @@ export default async function LeadsPage({
     ? await supabase.from("profiles").select("id, name, email").in("id", memberUserIds)
     : { data: [] }
 
-  const leadsWithOwners = (leads ?? []).map((l: { owner_id: string }) => ({
+  const leadsWithOwners = (leads ?? []).map((l: { id: string; owner_id: string }) => ({
     ...l,
-    owner: ownerProfiles?.find((p) => p.id === (l as { owner_id: string }).owner_id) ?? null,
+    owner: ownerProfiles?.find((p) => p.id === l.owner_id) ?? null,
+    stage: leadStageMap.get(l.id) ?? "novo_cliente",
   }))
 
   const isAdmin = (members ?? []).some(
@@ -80,7 +96,6 @@ export default async function LeadsPage({
       isAdmin={isAdmin}
       filters={{
         q: searchParams.q ?? "",
-        status: searchParams.status ?? "",
         owner: searchParams.owner ?? "",
       }}
     />

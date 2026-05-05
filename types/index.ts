@@ -5,12 +5,13 @@ export type WorkspaceMemberRole = "admin" | "member"
 export type LeadStatus = "active" | "inactive" | "converted" | "lost"
 
 export type DealStage =
-  | "new_lead"
-  | "contacted"
-  | "proposal_sent"
-  | "negotiation"
-  | "closed_won"
-  | "closed_lost"
+  | "novo_cliente"
+  | "apresentar_proposta"
+  | "proposta_aceita"
+  | "obra_andamento"
+  | "obra_finalizada"
+  | "cliente_perdido"
+  | "cliente_stand_by"
 
 export type ActivityType = "call" | "email" | "meeting" | "note"
 
@@ -51,6 +52,8 @@ export interface Lead {
   company?: string
   role?: string
   status: LeadStatus
+  project_value?: number
+  installments_count?: number
   created_at: string
   updated_at: string
   owner?: User
@@ -83,14 +86,39 @@ export interface Activity {
   author?: User
 }
 
+export type InstallmentInput = {
+  installment_number: number
+  amount: number
+  due_date: string
+}
+
+export type InstallmentStatus = "pending" | "paid"
+
+export interface PaymentInstallment {
+  id: string
+  workspace_id: string
+  lead_id: string
+  installment_number: number
+  amount: number
+  due_date: string
+  status: InstallmentStatus
+  paid_at?: string
+  created_at: string
+  updated_at: string
+  lead?: Lead
+}
+
 export type LeadFormData = {
   name: string
   email?: string
   phone?: string
   company?: string
   role?: string
-  status: "active" | "inactive" | "converted" | "lost"
   owner_id: string
+  initial_stage?: DealStage
+  project_value?: number
+  installments_count?: number
+  installments?: InstallmentInput[]
 }
 
 export interface Invite {

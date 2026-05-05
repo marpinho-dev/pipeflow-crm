@@ -274,6 +274,47 @@
 
 ---
 
+## M13 — Fluxo de Pagamentos
+
+**Branch:** `feat/customer-management`
+
+**Objetivo:** Módulo de controle financeiro por cliente: cadastro de valor do projeto e parcelas no lead, e página dedicada com gráficos de projeção futura, histórico de pagamentos e quadro de valores travados.
+
+### Regra de visibilidade
+
+- Leads com deal em `novo_cliente` ou `apresentar_proposta` → valor **travado** (não entra no fluxo ativo)
+- Leads com deal em `proposta_aceita` ou posterior → entram no **fluxo real de pagamentos**
+- `overdue` é computado em tempo de consulta: `status = 'pending' AND due_date < hoje` (não armazenado)
+
+### Entregas
+
+- [ ] **Passo 1 — Corrigir `types/index.ts`:** atualizar `DealStage` para os 7 stages reais do banco; adicionar `InstallmentStatus`, `PaymentInstallment`, `InstallmentInput`; adicionar `project_value` e `installments_count` na interface `Lead`
+- [ ] **Passo 2 — Migration `008_payment_installments.sql`:** adicionar `project_value` e `installments_count` na tabela `leads`; criar tabela `payment_installments` (id, workspace_id, lead_id, installment_number, amount, due_date, status, paid_at, timestamps); trigger `updated_at`; políticas RLS com `get_user_workspace_ids()`
+- [ ] **Passo 3 — Formulário do Lead:** adicionar seção "Pagamentos do Projeto" no `lead-modal.tsx` com campo Valor do Projeto, Nº de Parcelas e N linhas dinâmicas (data + valor, default = total ÷ N, editável); atualizar `createLeadAction` e `updateLeadAction` em `lib/actions/leads.ts` para criar/substituir installments junto ao lead
+- [ ] **Passo 4 — Sidebar:** adicionar item "Fluxo de Pagamento" com ícone `WalletCards` (lucide-react) em `components/shared/sidebar.tsx`, logo após Leads
+- [ ] **Passo 5 — Server Actions `lib/actions/payments.ts`:** `markInstallmentAsPaid(installmentId)`; `getPaymentsPageData(workspaceId, month, year)` retornando projeção futura (12 meses, só pending), lista do mês (pending + overdue), histórico pago (12 meses), atrasados gerais e quadro de travados
+- [ ] **Passo 6 — Página `/payments`:** `page.tsx` (Server Component) + `payments-client.tsx` (Client Component) com: seletor de mês, gráfico de projeção pendente (~65% largura), lista do mês com botão "Marcar como Pago" (~35%), gráfico de histórico com toggle Pagos/Atrasados (fullwidth), card de valores travados no rodapé
+
+### Layout da página
+
+```
+[Seletor de mês: < Maio 2026 >]
+
+[Gráfico barras — Projeção Pendente (~65%)] | [Lista do mês (~35%)]
+ Próximos 12 meses, só pending               Pending + overdue do mês
+                                              Botão "Marcar como Pago" por item
+
+[Gráfico barras — Histórico (full width)]
+ Últimos 12 meses | toggle: [Pagos] / [Atrasados]
+
+[Card Travados]
+ Valor potencial: R$ X.XXX,00 | Clientes em negociação: N
+```
+
+**Commit final:** `feat: payment flow module with installment tracking and cash flow dashboard`
+
+---
+
 ## Resumo de Branches
 
 | Branch | Milestone |
@@ -290,3 +331,4 @@
 | `feat/onboarding` | M10 — Onboarding |
 | `feat/polish-deploy` | M11 — Polish & Deploy |
 | `feat/activities` | M12 — Gestão de Atividades |
+| `feat/customer-management` | M13 — Fluxo de Pagamentos |

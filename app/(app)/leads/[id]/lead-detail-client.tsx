@@ -32,7 +32,6 @@ interface Lead {
   phone: string | null
   company: string | null
   role: string | null
-  status: string
   owner_id: string
   created_at: string
   updated_at: string
@@ -57,21 +56,14 @@ interface Activity {
   author: Profile | null
 }
 
-const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  active:    { label: "Ativo",      className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-  inactive:  { label: "Inativo",    className: "bg-muted text-muted-foreground" },
-  converted: { label: "Convertido", className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
-  lost:      { label: "Perdido",    className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
-}
-
-const STAGE_LABELS: Record<string, string> = {
-  novo_cliente:        "Novo cliente",
-  apresentar_proposta: "Apresentar a proposta",
-  proposta_aceita:     "Proposta aceita",
-  obra_andamento:      "Obra em andamento",
-  obra_finalizada:     "Obra finalizada",
-  cliente_perdido:     "Cliente Perdido",
-  cliente_stand_by:    "Cliente em stand by",
+const STAGE_LABELS: Record<string, { label: string; className: string }> = {
+  novo_cliente:        { label: "Novo Cliente",        className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
+  apresentar_proposta: { label: "Apresentar Proposta", className: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400" },
+  proposta_aceita:     { label: "Proposta Aceita",     className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
+  obra_andamento:      { label: "Obra em Andamento",   className: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
+  obra_finalizada:     { label: "Obra Finalizada",     className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+  cliente_perdido:     { label: "Cliente Perdido",     className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+  cliente_stand_by:    { label: "Stand By",            className: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400" },
 }
 
 const ACTIVITY_TYPES: { value: string; label: string; icon: React.ElementType; color: string }[] = [
@@ -230,7 +222,8 @@ export function LeadDetailClient({
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [dealsExpanded, setDealsExpanded] = useState(true)
 
-  const status = STATUS_LABELS[lead.status] ?? STATUS_LABELS.active
+  const dealStage = deals[0]?.stage ?? "novo_cliente"
+  const stageInfo = STAGE_LABELS[dealStage] ?? STAGE_LABELS.novo_cliente
 
   async function handleDeleteActivity() {
     if (!deleteTarget) return
@@ -280,8 +273,8 @@ export function LeadDetailClient({
               </button>
             </div>
 
-            <span className={cn("inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium", status.className)}>
-              {status.label}
+            <span className={cn("inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium", stageInfo.className)}>
+              {stageInfo.label}
             </span>
 
             <div className="space-y-2.5 text-sm">
@@ -339,7 +332,7 @@ export function LeadDetailClient({
                   deals.map((deal) => (
                     <div key={deal.id} className="rounded-lg border border-border bg-background p-3 space-y-1">
                       <p className="text-sm font-medium text-foreground truncate">{deal.title}</p>
-                      <p className="text-xs text-muted-foreground">{STAGE_LABELS[deal.stage] ?? deal.stage}</p>
+                      <p className="text-xs text-muted-foreground">{STAGE_LABELS[deal.stage]?.label ?? deal.stage}</p>
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-semibold text-foreground">{formatCurrency(deal.value ?? 0)}</span>
                         {deal.due_date && (

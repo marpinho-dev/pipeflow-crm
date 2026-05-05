@@ -8,7 +8,6 @@ import { WORKSPACE_COOKIE, FREE_PLAN_LIMIT } from "@/lib/constants"
 import type { LeadFormData } from "@/types"
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const VALID_STATUSES = ["active", "inactive", "converted", "lost"] as const
 
 function validateLeadData(data: LeadFormData) {
   if (!data.name || data.name.trim().length < 1 || data.name.length > 255) {
@@ -25,9 +24,6 @@ function validateLeadData(data: LeadFormData) {
   }
   if (data.role && data.role.length > 255) {
     return "Cargo deve ter no máximo 255 caracteres"
-  }
-  if (!VALID_STATUSES.includes(data.status as typeof VALID_STATUSES[number])) {
-    return "Status inválido"
   }
   return null
 }
@@ -60,20 +56,50 @@ export async function createLeadAction(data: LeadFormData) {
     }
   }
 
-  const { error } = await supabase.from("leads").insert({
-    workspace_id: workspaceId,
-    owner_id: data.owner_id,
-    name: data.name,
-    email: data.email || null,
-    phone: data.phone || null,
-    company: data.company || null,
-    role: data.role || null,
-    status: data.status,
-  })
+  const { data: newLead, error } = await supabase
+    .from("leads")
+    .insert({
+      workspace_id: workspaceId,
+      owner_id: data.owner_id,
+      name: data.name,
+      email: data.email || null,
+      phone: data.phone || null,
+      company: data.company || null,
+      role: data.role || null,
+      status: "active",
+      project_value: data.project_value ?? null,
+      installments_count: data.installments_count ?? null,
+    })
+    .select("id")
+    .single()
 
   if (error) return { error: error.message }
 
+  if (newLead && data.installments && data.installments.length > 0) {
+    await supabase.from("payment_installments").insert(
+      data.installments.map((inst) => ({
+        workspace_id: workspaceId,
+        lead_id: newLead.id,
+        installment_number: inst.installment_number,
+        amount: inst.amount,
+        due_date: inst.due_date,
+      }))
+    )
+  }
+
+  if (newLead) {
+    await supabase.from("deals").insert({
+      workspace_id: workspaceId,
+      lead_id: newLead.id,
+      owner_id: data.owner_id,
+      title: data.name,
+      value: data.project_value ?? 0,
+      stage: data.initial_stage ?? "novo_cliente",
+    })
+  }
+
   revalidatePath("/leads")
+  revalidatePath("/pipeline")
   return { success: true }
 }
 
@@ -85,6 +111,9 @@ export async function updateLeadAction(leadId: string, data: LeadFormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect("/login")
 
+  const workspaceId = cookies().get(WORKSPACE_COOKIE)?.value
+  if (!workspaceId) return { error: "Nenhum workspace selecionado" }
+
   const { error } = await supabase
     .from("leads")
     .update({
@@ -93,15 +122,47 @@ export async function updateLeadAction(leadId: string, data: LeadFormData) {
       phone: data.phone || null,
       company: data.company || null,
       role: data.role || null,
-      status: data.status,
       owner_id: data.owner_id,
+      project_value: data.project_value ?? null,
+      installments_count: data.installments_count ?? null,
     })
     .eq("id", leadId)
 
   if (error) return { error: error.message }
 
+  if (data.installments !== undefined) {
+    await supabase.from("payment_installments").delete().eq("lead_id", leadId)
+    if (data.installments.length > 0) {
+      await supabase.from("payment_installments").insert(
+        data.installments.map((inst) => ({
+          workspace_id: workspaceId,
+          lead_id: leadId,
+          installment_number: inst.installment_number,
+          amount: inst.amount,
+          due_date: inst.due_date,
+        }))
+      )
+    }
+  }
+
   revalidatePath("/leads")
+  revalidatePath("/payments")
   return { success: true }
+}
+
+export async function getLeadInstallmentsAction(leadId: string) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Não autenticado" }
+
+  const { data, error } = await supabase
+    .from("payment_installments")
+    .select("installment_number, amount, due_date")
+    .eq("lead_id", leadId)
+    .order("installment_number", { ascending: true })
+
+  if (error) return { error: error.message }
+  return { data: data ?? [] }
 }
 
 export async function deleteLeadAction(leadId: string) {
