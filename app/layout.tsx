@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/shared/theme-provider"
 const inter = Inter({ subsets: ["latin", "latin-ext"] })
 
 export const metadata: Metadata = {
-  title: "PipeFlow CRM",
+  title: "MARP CRM",
   description: "CRM de vendas simples e acessível para times e freelancers",
 }
 

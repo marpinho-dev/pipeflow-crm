@@ -6,7 +6,7 @@ export function HeroSection() {
     <section className="relative overflow-hidden bg-background">
       {/* Navbar */}
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-5">
-        <span className="text-xl font-bold text-primary">PipeFlow</span>
+        <span className="text-xl font-bold text-primary">MARP</span>
         <div className="flex items-center gap-2 sm:gap-6">
           <Link href="#features" className="hidden sm:block text-sm text-muted-foreground hover:text-foreground">
             Funcionalidades

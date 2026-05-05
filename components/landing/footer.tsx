@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="border-t border-border bg-background py-12">
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <span className="text-lg font-bold text-primary">PipeFlow</span>
+          <span className="text-lg font-bold text-primary">MARP</span>
 
           <nav className="flex items-center gap-6 text-sm text-muted-foreground">
             <Link href="#features" className="hover:text-foreground">
@@ -24,7 +24,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t border-border pt-6 text-center text-xs text-muted-foreground">
-          <span suppressHydrationWarning>© {new Date().getFullYear()} PipeFlow CRM. Todos os direitos reservados.</span>
+          <span suppressHydrationWarning>© {new Date().getFullYear()} MARP CRM. Todos os direitos reservados.</span>
         </div>
       </div>
     </footer>

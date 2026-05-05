@@ -112,7 +112,7 @@ export async function inviteMemberAction(
 
   if (resend && workspace) {
     const { data: emailData, error: emailError } = await resend.emails.send({
-      from: "PipeFlow CRM <onboarding@resend.dev>",
+      from: "MARP CRM <onboarding@resend.dev>",
       to: email,
       subject: `Você foi convidado para ${workspace.name}`,
       html: inviteEmailHtml({ workspaceName: workspace.name, inviterName, role, inviteUrl }),

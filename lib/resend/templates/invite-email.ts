@@ -17,7 +17,7 @@ export function inviteEmailHtml({ workspaceName, inviterName, role, inviteUrl }:
   <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9fafb;margin:0;padding:40px 0;">
     <div style="max-width:480px;margin:0 auto;background:white;border-radius:12px;padding:40px;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
       <div style="margin-bottom:32px;">
-        <span style="font-size:20px;font-weight:700;color:#6366f1;">PipeFlow</span>
+        <span style="font-size:20px;font-weight:700;color:#6366f1;">MARP</span>
         <span style="font-size:20px;font-weight:700;color:#111827;">CRM</span>
       </div>
       <h1 style="font-size:22px;font-weight:700;color:#111827;margin:0 0 8px;">

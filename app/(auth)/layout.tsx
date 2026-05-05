@@ -3,7 +3,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <span className="text-2xl font-bold text-primary">PipeFlow</span>
+          <span className="text-2xl font-bold text-primary">MARP</span>
           <span className="text-2xl font-bold text-foreground">CRM</span>
         </div>
         {children}
