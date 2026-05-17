@@ -116,10 +116,31 @@ export type LeadFormData = {
   company?: string
   role?: string
   owner_id: string
+  store_id?: string
   initial_stage?: DealStage
   project_value?: number
   installments_count?: number
   installments?: InstallmentInput[]
+}
+
+export interface Store {
+  id: string
+  workspace_id: string
+  name: string
+  email?: string
+  phone?: string
+  referral_percentage: number
+  sales_volume: number
+  created_at: string
+  updated_at: string
+}
+
+export type StoreFormData = {
+  name: string
+  email?: string
+  phone?: string
+  referral_percentage: number
+  sales_volume: number
 }
 
 export interface Invite {

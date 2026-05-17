@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   WalletCards,
+  Store,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { WorkspaceSwitcher } from "./workspace-switcher"
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { href: "/activities", label: "Atividades",    icon: CheckSquare,     adminOnly: false, badgeKey: "activities" },
   { href: "/leads",      label: "Leads",         icon: Users,           adminOnly: false, badgeKey: null         },
   { href: "/payments",   label: "Fluxo de Pagamento", icon: WalletCards, adminOnly: false, badgeKey: null        },
+  { href: "/lojas",      label: "Lojas",          icon: Store,           adminOnly: false, badgeKey: null         },
   { href: "/pipeline",   label: "Pipeline",      icon: Kanban,          adminOnly: false, badgeKey: null         },
   { href: "/settings",   label: "Configurações", icon: Settings,        adminOnly: true,  badgeKey: null         },
 ]

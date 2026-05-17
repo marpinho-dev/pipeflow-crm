@@ -15,6 +15,11 @@ interface Profile {
   email: string
 }
 
+interface StoreOption {
+  id: string
+  name: string
+}
+
 interface Lead {
   id: string
   name: string
@@ -23,6 +28,7 @@ interface Lead {
   company: string | null
   role: string | null
   owner_id: string
+  store_id?: string | null
   created_at: string
   stage: string
   owner: Profile | null
@@ -45,6 +51,7 @@ export function LeadsClient({
   page,
   pageSize,
   memberProfiles,
+  storeOptions,
   workspacePlan,
   currentUserId,
   isAdmin,
@@ -56,6 +63,7 @@ export function LeadsClient({
   page: number
   pageSize: number
   memberProfiles: Profile[]
+  storeOptions?: StoreOption[]
   workspacePlan: string
   currentUserId: string
   isAdmin: boolean
@@ -323,6 +331,7 @@ export function LeadsClient({
         <LeadModal
           lead={modalLead === "new" ? null : modalLead}
           memberProfiles={memberProfiles}
+          storeOptions={storeOptions}
           currentUserId={currentUserId}
           isAdmin={isAdmin}
           onClose={() => setModalLead(null)}

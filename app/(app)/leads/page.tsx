@@ -38,11 +38,13 @@ export default async function LeadsPage({
     { count: totalLeadCount },
     { data: members },
     { data: workspace },
+    { data: stores },
   ] = await Promise.all([
     query.order("created_at", { ascending: false }).range(offset, offset + PAGE_SIZE - 1),
     supabase.from("leads").select("*", { count: "exact", head: true }).eq("workspace_id", workspaceId),
     supabase.from("workspace_members").select("user_id, role").eq("workspace_id", workspaceId),
     supabase.from("workspaces").select("plan").eq("id", workspaceId).single(),
+    supabase.from("stores").select("id, name").eq("workspace_id", workspaceId).order("name"),
   ])
 
   // Fetch deal stage for each lead (most recent deal)
@@ -91,6 +93,7 @@ export default async function LeadsPage({
       page={page}
       pageSize={PAGE_SIZE}
       memberProfiles={memberProfiles ?? []}
+      storeOptions={stores ?? []}
       workspacePlan={workspace?.plan ?? "free"}
       currentUserId={user.id}
       isAdmin={isAdmin}

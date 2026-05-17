@@ -67,6 +67,7 @@ export async function createLeadAction(data: LeadFormData) {
       company: data.company || null,
       role: data.role || null,
       status: "active",
+      store_id: data.store_id || null,
       project_value: data.project_value ?? null,
       installments_count: data.installments_count ?? null,
     })
@@ -123,6 +124,7 @@ export async function updateLeadAction(leadId: string, data: LeadFormData) {
       company: data.company || null,
       role: data.role || null,
       owner_id: data.owner_id,
+      store_id: data.store_id || null,
       project_value: data.project_value ?? null,
       installments_count: data.installments_count ?? null,
     })

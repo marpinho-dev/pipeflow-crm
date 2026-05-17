@@ -11,6 +11,11 @@ interface Profile {
   email: string
 }
 
+interface StoreOption {
+  id: string
+  name: string
+}
+
 interface Lead {
   id: string
   name: string
@@ -19,6 +24,7 @@ interface Lead {
   company: string | null
   role: string | null
   owner_id: string
+  store_id?: string | null
   project_value?: number | null
   installments_count?: number | null
 }
@@ -43,12 +49,14 @@ function formatBRL(value: number) {
 export function LeadModal({
   lead,
   memberProfiles,
+  storeOptions,
   currentUserId,
   isAdmin,
   onClose,
 }: {
   lead: Lead | null
   memberProfiles: Profile[]
+  storeOptions?: StoreOption[]
   currentUserId: string
   isAdmin: boolean
   onClose: () => void
@@ -62,6 +70,7 @@ export function LeadModal({
     company: lead?.company ?? "",
     role: lead?.role ?? "",
     owner_id: lead?.owner_id ?? currentUserId,
+    store_id: lead?.store_id ?? undefined,
     initial_stage: "novo_cliente",
     project_value: lead?.project_value ?? undefined,
     installments_count: lead?.installments_count ?? undefined,
@@ -242,6 +251,22 @@ export function LeadModal({
                 >
                   {memberProfiles.map((p) => (
                     <option key={p.id} value={p.id}>{p.name ?? p.email}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {storeOptions && storeOptions.length > 0 && (
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-foreground">Loja Parceira</label>
+                <select
+                  value={form.store_id ?? ""}
+                  onChange={(e) => setForm((prev) => ({ ...prev, store_id: e.target.value || undefined }))}
+                  className={INPUT_CLASS}
+                >
+                  <option value="">Nenhuma</option>
+                  {storeOptions.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
                 </select>
               </div>
