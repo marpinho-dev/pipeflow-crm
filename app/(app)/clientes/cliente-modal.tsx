@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { X } from "lucide-react"
-import { createLeadAction, updateLeadAction, getLeadInstallmentsAction } from "@/lib/actions/leads"
-import type { LeadFormData, InstallmentInput } from "@/types"
+import { createClienteAction, updateClienteAction, getClienteInstallmentsAction } from "@/lib/actions/clientes"
+import type { ClienteFormData, InstallmentInput } from "@/types"
 
 interface Profile {
   id: string
@@ -11,12 +11,7 @@ interface Profile {
   email: string
 }
 
-interface StoreOption {
-  id: string
-  name: string
-}
-
-interface Lead {
+interface Cliente {
   id: string
   name: string
   email: string | null
@@ -24,7 +19,6 @@ interface Lead {
   company: string | null
   role: string | null
   owner_id: string
-  store_id?: string | null
   project_value?: number | null
   installments_count?: number | null
 }
@@ -46,34 +40,31 @@ function formatBRL(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)
 }
 
-export function LeadModal({
-  lead,
+export function ClienteModal({
+  cliente,
   memberProfiles,
-  storeOptions,
   currentUserId,
   isAdmin,
   onClose,
 }: {
-  lead: Lead | null
+  cliente: Cliente | null
   memberProfiles: Profile[]
-  storeOptions?: StoreOption[]
   currentUserId: string
   isAdmin: boolean
   onClose: () => void
 }) {
-  const isEdit = !!lead
+  const isEdit = !!cliente
 
-  const [form, setForm] = useState<LeadFormData>({
-    name: lead?.name ?? "",
-    email: lead?.email ?? "",
-    phone: lead?.phone ?? "",
-    company: lead?.company ?? "",
-    role: lead?.role ?? "",
-    owner_id: lead?.owner_id ?? currentUserId,
-    store_id: lead?.store_id ?? undefined,
+  const [form, setForm] = useState<ClienteFormData>({
+    name: cliente?.name ?? "",
+    email: cliente?.email ?? "",
+    phone: cliente?.phone ?? "",
+    company: cliente?.company ?? "",
+    role: cliente?.role ?? "",
+    owner_id: cliente?.owner_id ?? currentUserId,
     initial_stage: "novo_cliente",
-    project_value: lead?.project_value ?? undefined,
-    installments_count: lead?.installments_count ?? undefined,
+    project_value: cliente?.project_value ?? undefined,
+    installments_count: cliente?.installments_count ?? undefined,
   })
   const [rows, setRows] = useState<{ amount: string; due_date: string }[]>([])
   const [loading, setLoading] = useState(false)
@@ -88,15 +79,15 @@ export function LeadModal({
   }, [onClose])
 
   useEffect(() => {
-    if (!isEdit || !lead?.id) return
-    getLeadInstallmentsAction(lead.id).then((res) => {
+    if (!isEdit || !cliente?.id) return
+    getClienteInstallmentsAction(cliente.id).then((res) => {
       if (res.data && res.data.length > 0) {
         setRows(res.data.map((i) => ({ amount: String(i.amount), due_date: i.due_date })))
       }
     })
-  }, [isEdit, lead?.id])
+  }, [isEdit, cliente?.id])
 
-  function set(field: keyof LeadFormData, value: string) {
+  function set(field: keyof ClienteFormData, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -134,14 +125,14 @@ export function LeadModal({
         due_date: row.due_date,
       }))
 
-      const payload: LeadFormData = {
+      const payload: ClienteFormData = {
         ...form,
         installments: installments.length > 0 ? installments : undefined,
       }
 
       const result = isEdit
-        ? await updateLeadAction(lead.id, payload)
-        : await createLeadAction(payload)
+        ? await updateClienteAction(cliente.id, payload)
+        : await createClienteAction(payload)
 
       if (result.error) { setError(result.error); return }
       onClose()
@@ -157,7 +148,7 @@ export function LeadModal({
       <div className="w-full max-w-2xl rounded-xl border border-border bg-card shadow-lg max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between border-b border-border px-6 py-4 flex-shrink-0">
           <h2 className="text-base font-semibold text-foreground">
-            {isEdit ? "Editar lead" : "Novo lead"}
+            {isEdit ? "Editar cliente" : "Novo cliente"}
           </h2>
           <button onClick={onClose} className="rounded p-1 text-muted-foreground hover:bg-accent">
             <X className="h-5 w-5" />
@@ -165,7 +156,6 @@ export function LeadModal({
         </div>
 
         <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 p-4 sm:p-6 space-y-6">
-          {/* Dados do lead */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="col-span-1 sm:col-span-2">
               <label className="mb-1.5 block text-sm font-medium text-foreground">
@@ -255,25 +245,8 @@ export function LeadModal({
                 </select>
               </div>
             )}
-
-            {storeOptions && storeOptions.length > 0 && (
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">Loja Parceira</label>
-                <select
-                  value={form.store_id ?? ""}
-                  onChange={(e) => setForm((prev) => ({ ...prev, store_id: e.target.value || undefined }))}
-                  className={INPUT_CLASS}
-                >
-                  <option value="">Nenhuma</option>
-                  {storeOptions.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
 
-          {/* Pagamentos do Projeto */}
           <div className="border-t border-border pt-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">Pagamentos do Projeto</h3>
 
@@ -360,7 +333,7 @@ export function LeadModal({
               disabled={loading}
               className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
             >
-              {loading ? (isEdit ? "Salvando..." : "Criando...") : (isEdit ? "Salvar" : "Criar lead")}
+              {loading ? (isEdit ? "Salvando..." : "Criando...") : (isEdit ? "Salvar" : "Criar cliente")}
             </button>
           </div>
         </form>

@@ -116,12 +116,13 @@ export type LeadFormData = {
   company?: string
   role?: string
   owner_id: string
-  store_id?: string
   initial_stage?: DealStage
   project_value?: number
   installments_count?: number
   installments?: InstallmentInput[]
 }
+
+export type ClienteFormData = LeadFormData
 
 export interface Store {
   id: string

@@ -41,6 +41,48 @@ CREATE TRIGGER stores_updated_at
   BEFORE UPDATE ON stores
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- Vincula leads a lojas parceiras (opcional)
-ALTER TABLE leads
-  ADD COLUMN IF NOT EXISTS store_id UUID REFERENCES stores(id) ON DELETE SET NULL;
+-- Compras registradas em cada loja (independente dos clientes/leads)
+CREATE TABLE store_purchases (
+  id            UUID           PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id  UUID           NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  store_id      UUID           NOT NULL REFERENCES stores(id) ON DELETE CASCADE,
+  client_name   TEXT           NOT NULL,
+  amount        NUMERIC(12, 2) NOT NULL DEFAULT 0,
+  purchase_date DATE           NOT NULL,
+  fee_amount    NUMERIC(12, 2) NOT NULL DEFAULT 0,
+  fee_status    TEXT           NOT NULL DEFAULT 'pending' CHECK (fee_status IN ('pending', 'paid')),
+  fee_paid_at   TIMESTAMPTZ,
+  notes         TEXT,
+  created_at    TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
+  updated_at    TIMESTAMPTZ    NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE store_purchases ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "members can view store_purchases"
+  ON store_purchases FOR SELECT
+  USING (workspace_id = ANY(get_user_workspace_ids()));
+
+CREATE POLICY "members can create store_purchases"
+  ON store_purchases FOR INSERT
+  WITH CHECK (workspace_id = ANY(get_user_workspace_ids()));
+
+CREATE POLICY "members can update store_purchases"
+  ON store_purchases FOR UPDATE
+  USING (workspace_id = ANY(get_user_workspace_ids()))
+  WITH CHECK (workspace_id = ANY(get_user_workspace_ids()));
+
+CREATE POLICY "admins can delete store_purchases"
+  ON store_purchases FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM workspace_members
+      WHERE workspace_id = store_purchases.workspace_id
+        AND user_id = auth.uid()
+        AND role = 'admin'
+    )
+  );
+
+CREATE TRIGGER store_purchases_updated_at
+  BEFORE UPDATE ON store_purchases
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();

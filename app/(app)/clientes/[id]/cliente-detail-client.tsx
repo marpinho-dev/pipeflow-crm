@@ -9,15 +9,15 @@ import {
   Trash2, Plus, X, Check, ChevronDown,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { updateLeadAction } from "@/lib/actions/leads"
+import { updateClienteAction } from "@/lib/actions/clientes"
 import {
   createActivityAction,
   updateActivityAction,
   deleteActivityAction,
   type ActivityFormData,
 } from "@/lib/actions/activities"
-import { LeadModal } from "../lead-modal"
-import type { LeadFormData } from "@/types"
+import { ClienteModal } from "../cliente-modal"
+import type { ClienteFormData } from "@/types"
 
 interface Profile {
   id: string
@@ -25,7 +25,7 @@ interface Profile {
   email: string
 }
 
-interface Lead {
+interface Cliente {
   id: string
   name: string
   email: string | null
@@ -91,14 +91,13 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)
 }
 
-// ---- Activity Form ----
 function ActivityForm({
-  leadId,
+  clienteId,
   initial,
   onDone,
   onCancel,
 }: {
-  leadId: string
+  clienteId: string
   initial?: Activity
   onDone: () => void
   onCancel: () => void
@@ -121,8 +120,8 @@ function ActivityForm({
     setLoading(true)
     try {
       const result = initial
-        ? await updateActivityAction(initial.id, leadId, form)
-        : await createActivityAction(leadId, form)
+        ? await updateActivityAction(initial.id, clienteId, form)
+        : await createActivityAction(clienteId, form)
       if (result.error) { setError(result.error); return }
       router.refresh()
       onDone()
@@ -175,11 +174,7 @@ function ActivityForm({
           />
         </div>
         <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-accent"
-          >
+          <button type="button" onClick={onCancel} className="rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-accent">
             Cancelar
           </button>
           <button
@@ -198,16 +193,15 @@ function ActivityForm({
   )
 }
 
-// ---- Main Component ----
-export function LeadDetailClient({
-  lead,
+export function ClienteDetailClient({
+  cliente,
   deals,
   activities,
   memberProfiles,
   currentUserId,
   isAdmin,
 }: {
-  lead: Lead
+  cliente: Cliente
   deals: Deal[]
   activities: Activity[]
   memberProfiles: Profile[]
@@ -229,7 +223,7 @@ export function LeadDetailClient({
     if (!deleteTarget) return
     setDeleteLoading(true)
     try {
-      await deleteActivityAction(deleteTarget.id, lead.id)
+      await deleteActivityAction(deleteTarget.id, cliente.id)
       router.refresh()
       setDeleteTarget(null)
     } finally {
@@ -239,35 +233,30 @@ export function LeadDetailClient({
 
   return (
     <>
-      {/* Top bar */}
       <div className="flex h-14 items-center gap-3 border-b border-border bg-background px-4 sm:px-6">
         <Link
-          href="/leads"
+          href="/clientes"
           className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Leads
+          Clientes
         </Link>
         <span className="text-muted-foreground">/</span>
-        <span className="text-sm font-medium text-foreground truncate">{lead.name}</span>
+        <span className="text-sm font-medium text-foreground truncate">{cliente.name}</span>
       </div>
 
       <div className="flex flex-col overflow-auto md:flex-row md:h-[calc(100vh-3.5rem-3.5rem)] md:overflow-hidden">
-        {/* Left panel — profile + deals */}
         <aside className="w-full shrink-0 border-b border-border bg-card p-5 space-y-5 md:w-80 md:border-b-0 md:border-r md:overflow-y-auto">
-          {/* Lead profile */}
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <div className="min-w-0">
-                <h1 className="text-base font-semibold text-foreground leading-tight truncate">{lead.name}</h1>
-                {lead.role && (
-                  <p className="mt-0.5 text-sm text-muted-foreground truncate">{lead.role}</p>
-                )}
+                <h1 className="text-base font-semibold text-foreground leading-tight truncate">{cliente.name}</h1>
+                {cliente.role && <p className="mt-0.5 text-sm text-muted-foreground truncate">{cliente.role}</p>}
               </div>
               <button
                 onClick={() => setEditModalOpen(true)}
                 className="ml-2 shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-                aria-label="Editar lead"
+                aria-label="Editar cliente"
               >
                 <Pencil className="h-4 w-4" />
               </button>
@@ -278,43 +267,42 @@ export function LeadDetailClient({
             </span>
 
             <div className="space-y-2.5 text-sm">
-              {lead.email && (
+              {cliente.email && (
                 <div className="flex items-center gap-2.5 text-foreground">
                   <Mail className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <a href={`mailto:${lead.email}`} className="truncate hover:underline">{lead.email}</a>
+                  <a href={`mailto:${cliente.email}`} className="truncate hover:underline">{cliente.email}</a>
                 </div>
               )}
-              {lead.phone && (
+              {cliente.phone && (
                 <div className="flex items-center gap-2.5 text-foreground">
                   <Phone className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <a href={`tel:${lead.phone}`} className="truncate hover:underline">{lead.phone}</a>
+                  <a href={`tel:${cliente.phone}`} className="truncate hover:underline">{cliente.phone}</a>
                 </div>
               )}
-              {lead.company && (
+              {cliente.company && (
                 <div className="flex items-center gap-2.5 text-foreground">
                   <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <span className="truncate">{lead.company}</span>
+                  <span className="truncate">{cliente.company}</span>
                 </div>
               )}
-              {lead.role && (
+              {cliente.role && (
                 <div className="flex items-center gap-2.5 text-foreground">
                   <Briefcase className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <span className="truncate">{lead.role}</span>
+                  <span className="truncate">{cliente.role}</span>
                 </div>
               )}
               <div className="flex items-center gap-2.5 text-muted-foreground">
                 <User className="h-4 w-4 shrink-0" />
-                <span className="truncate">{lead.owner?.name ?? lead.owner?.email ?? "—"}</span>
+                <span className="truncate">{cliente.owner?.name ?? cliente.owner?.email ?? "—"}</span>
               </div>
             </div>
 
             <div className="border-t border-border pt-3 text-xs text-muted-foreground space-y-1">
-              <p>Criado em {formatDate(lead.created_at)}</p>
-              <p>Atualizado em {formatDate(lead.updated_at)}</p>
+              <p>Criado em {formatDate(cliente.created_at)}</p>
+              <p>Atualizado em {formatDate(cliente.updated_at)}</p>
             </div>
           </div>
 
-          {/* Linked deals */}
           <div className="border-t border-border pt-4">
             <button
               onClick={() => setDealsExpanded((v) => !v)}
@@ -335,9 +323,7 @@ export function LeadDetailClient({
                       <p className="text-xs text-muted-foreground">{STAGE_LABELS[deal.stage]?.label ?? deal.stage}</p>
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-semibold text-foreground">{formatCurrency(deal.value ?? 0)}</span>
-                        {deal.due_date && (
-                          <span className="text-muted-foreground">{formatDate(deal.due_date)}</span>
-                        )}
+                        {deal.due_date && <span className="text-muted-foreground">{formatDate(deal.due_date)}</span>}
                       </div>
                     </div>
                   ))
@@ -347,7 +333,6 @@ export function LeadDetailClient({
           </div>
         </aside>
 
-        {/* Right panel — activity timeline */}
         <main className="flex-1 p-4 sm:p-6 space-y-4 md:overflow-y-auto">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-foreground">Atividades</h2>
@@ -363,11 +348,7 @@ export function LeadDetailClient({
           </div>
 
           {showNewActivity && (
-            <ActivityForm
-              leadId={lead.id}
-              onDone={() => setShowNewActivity(false)}
-              onCancel={() => setShowNewActivity(false)}
-            />
+            <ActivityForm clienteId={cliente.id} onDone={() => setShowNewActivity(false)} onCancel={() => setShowNewActivity(false)} />
           )}
 
           {activities.length === 0 && !showNewActivity ? (
@@ -375,52 +356,33 @@ export function LeadDetailClient({
               <StickyNote className="mb-3 h-8 w-8 text-muted-foreground/50" />
               <p className="text-sm font-medium text-foreground">Nenhuma atividade ainda</p>
               <p className="mt-1 text-xs text-muted-foreground">Registre ligações, e-mails, reuniões ou notas.</p>
-              <button
-                onClick={() => setShowNewActivity(true)}
-                className="mt-4 flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
-              >
+              <button onClick={() => setShowNewActivity(true)} className="mt-4 flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90">
                 <Plus className="h-3.5 w-3.5" />
                 Nova atividade
               </button>
             </div>
           ) : (
             <div className="relative space-y-0">
-              {/* Timeline line */}
-              {activities.length > 0 && (
-                <div className="absolute left-4 top-5 bottom-5 w-px bg-border" />
-              )}
-
+              {activities.length > 0 && <div className="absolute left-4 top-5 bottom-5 w-px bg-border" />}
               {activities.map((activity) => {
                 const t = ACTIVITY_TYPES.find((a) => a.value === activity.type)
                 return (
                   <div key={activity.id} className="relative pl-11 pb-6 last:pb-0">
-                    {/* Icon bubble */}
                     <div className="absolute left-0 top-0.5 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card">
                       <ActivityIcon type={activity.type} />
                     </div>
 
                     {editingActivity?.id === activity.id ? (
-                      <ActivityForm
-                        leadId={lead.id}
-                        initial={activity}
-                        onDone={() => setEditingActivity(null)}
-                        onCancel={() => setEditingActivity(null)}
-                      />
+                      <ActivityForm clienteId={cliente.id} initial={activity} onDone={() => setEditingActivity(null)} onCancel={() => setEditingActivity(null)} />
                     ) : (
                       <div className="group rounded-xl border border-border bg-card p-4">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-xs font-semibold text-foreground">
-                                {t?.label ?? activity.type}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {formatDateTime(activity.activity_date)}
-                              </span>
+                              <span className="text-xs font-semibold text-foreground">{t?.label ?? activity.type}</span>
+                              <span className="text-xs text-muted-foreground">{formatDateTime(activity.activity_date)}</span>
                               {activity.author && (
-                                <span className="text-xs text-muted-foreground">
-                                  por {activity.author.name ?? activity.author.email}
-                                </span>
+                                <span className="text-xs text-muted-foreground">por {activity.author.name ?? activity.author.email}</span>
                               )}
                             </div>
                             <p className="mt-1.5 text-sm text-foreground whitespace-pre-wrap">{activity.description}</p>
@@ -428,18 +390,10 @@ export function LeadDetailClient({
 
                           {(activity.author_id === currentUserId || isAdmin) && (
                             <div className="flex shrink-0 items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                              <button
-                                onClick={() => setEditingActivity(activity)}
-                                className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
-                                aria-label="Editar atividade"
-                              >
+                              <button onClick={() => setEditingActivity(activity)} className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Editar atividade">
                                 <Pencil className="h-3.5 w-3.5" />
                               </button>
-                              <button
-                                onClick={() => setDeleteTarget(activity)}
-                                className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                                aria-label="Excluir atividade"
-                              >
+                              <button onClick={() => setDeleteTarget(activity)} className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label="Excluir atividade">
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
@@ -455,10 +409,9 @@ export function LeadDetailClient({
         </main>
       </div>
 
-      {/* Edit lead modal */}
       {editModalOpen && (
-        <LeadModal
-          lead={lead}
+        <ClienteModal
+          cliente={cliente}
           memberProfiles={memberProfiles}
           currentUserId={currentUserId}
           isAdmin={isAdmin}
@@ -466,26 +419,14 @@ export function LeadDetailClient({
         />
       )}
 
-      {/* Delete activity confirm */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg">
             <h3 className="mb-2 text-base font-semibold text-foreground">Excluir atividade</h3>
-            <p className="mb-6 text-sm text-muted-foreground">
-              Tem certeza que deseja excluir esta atividade? Esta ação não pode ser desfeita.
-            </p>
+            <p className="mb-6 text-sm text-muted-foreground">Tem certeza que deseja excluir esta atividade? Esta ação não pode ser desfeita.</p>
             <div className="flex gap-2">
-              <button
-                onClick={() => setDeleteTarget(null)}
-                className="flex-1 rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleDeleteActivity}
-                disabled={deleteLoading}
-                className="flex-1 rounded-md bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground hover:opacity-90 disabled:opacity-50"
-              >
+              <button onClick={() => setDeleteTarget(null)} className="flex-1 rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent">Cancelar</button>
+              <button onClick={handleDeleteActivity} disabled={deleteLoading} className="flex-1 rounded-md bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground hover:opacity-90 disabled:opacity-50">
                 {deleteLoading ? "Excluindo..." : "Excluir"}
               </button>
             </div>

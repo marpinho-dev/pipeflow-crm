@@ -23,7 +23,7 @@ import { createClient } from "@/lib/supabase/client"
 const NAV_ITEMS = [
   { href: "/dashboard",  label: "Dashboard",     icon: LayoutDashboard, adminOnly: false, badgeKey: null         },
   { href: "/activities", label: "Atividades",    icon: CheckSquare,     adminOnly: false, badgeKey: "activities" },
-  { href: "/leads",      label: "Leads",         icon: Users,           adminOnly: false, badgeKey: null         },
+  { href: "/clientes",   label: "Clientes",      icon: Users,           adminOnly: false, badgeKey: null         },
   { href: "/payments",   label: "Fluxo de Pagamento", icon: WalletCards, adminOnly: false, badgeKey: null        },
   { href: "/lojas",      label: "Lojas",          icon: Store,           adminOnly: false, badgeKey: null         },
   { href: "/pipeline",   label: "Pipeline",      icon: Kanban,          adminOnly: false, badgeKey: null         },

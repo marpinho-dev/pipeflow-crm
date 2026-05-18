@@ -282,7 +282,7 @@ export function ActivitiesClient({ activities, leads, memberProfiles, currentUse
                   <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                     <span className="font-medium">{TYPE_LABELS[activity.type]}</span>
                     {activity.lead && (
-                      <Link href={`/leads/${activity.lead.id}`} className="hover:text-foreground hover:underline">
+                      <Link href={`/clientes/${activity.lead.id}`} className="hover:text-foreground hover:underline">
                         {activity.lead.name}
                       </Link>
                     )}

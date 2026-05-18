@@ -5,11 +5,11 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { WORKSPACE_COOKIE, FREE_PLAN_LIMIT } from "@/lib/constants"
-import type { LeadFormData } from "@/types"
+import type { ClienteFormData } from "@/types"
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-function validateLeadData(data: LeadFormData) {
+function validateClienteData(data: ClienteFormData) {
   if (!data.name || data.name.trim().length < 1 || data.name.length > 255) {
     return "Nome deve ter entre 1 e 255 caracteres"
   }
@@ -28,8 +28,8 @@ function validateLeadData(data: LeadFormData) {
   return null
 }
 
-export async function createLeadAction(data: LeadFormData) {
-  const validationError = validateLeadData(data)
+export async function createClienteAction(data: ClienteFormData) {
+  const validationError = validateClienteData(data)
   if (validationError) return { error: validationError }
 
   const supabase = createClient()
@@ -52,7 +52,7 @@ export async function createLeadAction(data: LeadFormData) {
       .eq("workspace_id", workspaceId)
 
     if ((count ?? 0) >= FREE_PLAN_LIMIT) {
-      return { error: `Limite de ${FREE_PLAN_LIMIT} leads atingido no plano Free. Faça upgrade para o plano Pro.` }
+      return { error: `Limite de ${FREE_PLAN_LIMIT} clientes atingido no plano Free. Faça upgrade para o plano Pro.` }
     }
   }
 
@@ -103,8 +103,8 @@ export async function createLeadAction(data: LeadFormData) {
   return { success: true }
 }
 
-export async function updateLeadAction(leadId: string, data: LeadFormData) {
-  const validationError = validateLeadData(data)
+export async function updateClienteAction(leadId: string, data: ClienteFormData) {
+  const validationError = validateClienteData(data)
   if (validationError) return { error: validationError }
 
   const supabase = createClient()
@@ -150,7 +150,7 @@ export async function updateLeadAction(leadId: string, data: LeadFormData) {
   return { success: true }
 }
 
-export async function getLeadInstallmentsAction(leadId: string) {
+export async function getClienteInstallmentsAction(leadId: string) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Não autenticado" }
@@ -165,7 +165,7 @@ export async function getLeadInstallmentsAction(leadId: string) {
   return { data: data ?? [] }
 }
 
-export async function deleteLeadAction(leadId: string) {
+export async function deleteClienteAction(leadId: string) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect("/login")

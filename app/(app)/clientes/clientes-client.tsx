@@ -5,9 +5,9 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Plus, Search, Pencil, Trash2, AlertTriangle, ChevronLeft, ChevronRight, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { deleteLeadAction } from "@/lib/actions/leads"
+import { deleteClienteAction } from "@/lib/actions/clientes"
 import { FREE_PLAN_LIMIT } from "@/lib/constants"
-import { LeadModal } from "./lead-modal"
+import { ClienteModal } from "./cliente-modal"
 
 interface Profile {
   id: string
@@ -15,12 +15,7 @@ interface Profile {
   email: string
 }
 
-interface StoreOption {
-  id: string
-  name: string
-}
-
-interface Lead {
+interface Cliente {
   id: string
   name: string
   email: string | null
@@ -28,7 +23,6 @@ interface Lead {
   company: string | null
   role: string | null
   owner_id: string
-  store_id?: string | null
   created_at: string
   stage: string
   owner: Profile | null
@@ -44,26 +38,24 @@ const STAGE_LABELS: Record<string, { label: string; className: string }> = {
   cliente_stand_by:    { label: "Stand By",            className: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400" },
 }
 
-export function LeadsClient({
-  leads,
+export function ClientesClient({
+  clientes,
   totalCount,
-  totalLeadCount,
+  totalClienteCount,
   page,
   pageSize,
   memberProfiles,
-  storeOptions,
   workspacePlan,
   currentUserId,
   isAdmin,
   filters,
 }: {
-  leads: Lead[]
+  clientes: Cliente[]
   totalCount: number
-  totalLeadCount: number
+  totalClienteCount: number
   page: number
   pageSize: number
   memberProfiles: Profile[]
-  storeOptions?: StoreOption[]
   workspacePlan: string
   currentUserId: string
   isAdmin: boolean
@@ -74,13 +66,12 @@ export function LeadsClient({
   const searchParams = useSearchParams()
 
   const [searchInput, setSearchInput] = useState(filters.q)
-  const [modalLead, setModalLead] = useState<Lead | null | "new">(null)
-  const [deleteTarget, setDeleteTarget] = useState<Lead | null>(null)
+  const [modalCliente, setModalCliente] = useState<Cliente | null | "new">(null)
+  const [deleteTarget, setDeleteTarget] = useState<Cliente | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
-  const atLimit = workspacePlan === "free" && totalLeadCount >= FREE_PLAN_LIMIT
-  const nearLimit = workspacePlan === "free" && totalLeadCount >= FREE_PLAN_LIMIT * 0.8 && !atLimit
-
+  const atLimit = workspacePlan === "free" && totalClienteCount >= FREE_PLAN_LIMIT
+  const nearLimit = workspacePlan === "free" && totalClienteCount >= FREE_PLAN_LIMIT * 0.8 && !atLimit
   const totalPages = Math.ceil(totalCount / pageSize)
 
   const updateParams = useCallback(
@@ -95,12 +86,9 @@ export function LeadsClient({
     [router, pathname, searchParams]
   )
 
-  // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchInput !== filters.q) {
-        updateParams({ q: searchInput, page: "" })
-      }
+      if (searchInput !== filters.q) updateParams({ q: searchInput, page: "" })
     }, 350)
     return () => clearTimeout(timer)
   }, [searchInput, filters.q, updateParams])
@@ -109,7 +97,7 @@ export function LeadsClient({
     if (!deleteTarget) return
     setDeleteLoading(true)
     try {
-      await deleteLeadAction(deleteTarget.id)
+      await deleteClienteAction(deleteTarget.id)
       setDeleteTarget(null)
     } finally {
       setDeleteLoading(false)
@@ -118,45 +106,38 @@ export function LeadsClient({
 
   return (
     <>
-      {/* Header */}
       <div className="flex h-14 items-center justify-between border-b border-border bg-background px-4 sm:px-6">
         <div>
-          <h1 className="text-lg font-semibold leading-none">Leads</h1>
+          <h1 className="text-lg font-semibold leading-none">Clientes</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            {totalLeadCount} lead{totalLeadCount !== 1 ? "s" : ""}
+            {totalClienteCount} cliente{totalClienteCount !== 1 ? "s" : ""}
             {workspacePlan === "free" && ` / ${FREE_PLAN_LIMIT} (plano Free)`}
           </p>
         </div>
         <button
-          onClick={() => setModalLead("new")}
+          onClick={() => setModalCliente("new")}
           disabled={atLimit}
           className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
         >
           <Plus className="h-4 w-4" />
-          Novo lead
+          Novo cliente
         </button>
       </div>
 
       <div className="p-4 sm:p-6 space-y-4">
-        {/* Plan limit banners */}
         {atLimit && (
           <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             <AlertTriangle className="h-4 w-4 shrink-0" />
-            <span>
-              Limite de {FREE_PLAN_LIMIT} leads atingido. Faça upgrade para o plano Pro para adicionar mais.
-            </span>
+            <span>Limite de {FREE_PLAN_LIMIT} clientes atingido. Faça upgrade para o plano Pro para adicionar mais.</span>
           </div>
         )}
         {nearLimit && (
           <div className="flex items-center gap-2 rounded-lg border border-yellow-500/50 bg-yellow-50 px-4 py-3 text-sm text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
             <AlertTriangle className="h-4 w-4 shrink-0" />
-            <span>
-              Você usou {totalLeadCount} de {FREE_PLAN_LIMIT} leads do plano Free.
-            </span>
+            <span>Você usou {totalClienteCount} de {FREE_PLAN_LIMIT} clientes do plano Free.</span>
           </div>
         )}
 
-        {/* Filters */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative w-full sm:flex-1 sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -168,7 +149,6 @@ export function LeadsClient({
               className="w-full rounded-md border border-input bg-background py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
-
           <select
             value={filters.owner}
             onChange={(e) => updateParams({ owner: e.target.value, page: "" })}
@@ -181,7 +161,6 @@ export function LeadsClient({
           </select>
         </div>
 
-        {/* Table */}
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -197,78 +176,69 @@ export function LeadsClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {leads.length === 0 ? (
+                {clientes.length === 0 ? (
                   <tr>
                     <td colSpan={7}>
                       {filters.q || filters.owner ? (
                         <div className="flex flex-col items-center justify-center py-14 text-center">
                           <Search className="mb-3 h-8 w-8 text-muted-foreground/40" />
-                          <p className="text-sm font-medium text-foreground">Nenhum lead encontrado</p>
+                          <p className="text-sm font-medium text-foreground">Nenhum cliente encontrado</p>
                           <p className="mt-1 text-xs text-muted-foreground">Tente ajustar os filtros de busca.</p>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center justify-center py-14 text-center">
                           <Users className="mb-3 h-10 w-10 text-muted-foreground/30" />
-                          <p className="text-sm font-medium text-foreground">Nenhum lead ainda</p>
-                          <p className="mt-1 text-xs text-muted-foreground">Comece adicionando seu primeiro contato.</p>
+                          <p className="text-sm font-medium text-foreground">Nenhum cliente ainda</p>
+                          <p className="mt-1 text-xs text-muted-foreground">Comece adicionando seu primeiro cliente.</p>
                           <button
-                            onClick={() => setModalLead("new")}
+                            onClick={() => setModalCliente("new")}
                             disabled={atLimit}
                             className="mt-4 flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
                           >
                             <Plus className="h-3.5 w-3.5" />
-                            Novo lead
+                            Novo cliente
                           </button>
                         </div>
                       )}
                     </td>
                   </tr>
                 ) : (
-                  leads.map((lead) => {
-                    const stage = STAGE_LABELS[lead.stage] ?? STAGE_LABELS.novo_cliente
+                  clientes.map((cliente) => {
+                    const stage = STAGE_LABELS[cliente.stage] ?? STAGE_LABELS.novo_cliente
                     return (
-                      <tr key={lead.id} className="hover:bg-muted/30 transition-colors">
+                      <tr key={cliente.id} className="hover:bg-muted/30 transition-colors">
                         <td className="px-4 py-3">
-                          <Link href={`/leads/${lead.id}`} className="hover:underline">
-                            <div className="font-medium text-foreground">{lead.name}</div>
-                            {lead.role && (
-                              <div className="text-xs text-muted-foreground">{lead.role}</div>
-                            )}
+                          <Link href={`/clientes/${cliente.id}`} className="hover:underline">
+                            <div className="font-medium text-foreground">{cliente.name}</div>
+                            {cliente.role && <div className="text-xs text-muted-foreground">{cliente.role}</div>}
                           </Link>
                         </td>
-                        <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">
-                          {lead.company ?? "—"}
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
-                          {lead.email ?? "—"}
-                        </td>
+                        <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{cliente.company ?? "—"}</td>
+                        <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{cliente.email ?? "—"}</td>
                         <td className="px-4 py-3">
-                          <span className={cn(
-                            "inline-flex rounded-full px-2 py-0.5 text-xs font-medium",
-                            stage.className
-                          )}>
+                          <span className={cn("inline-flex rounded-full px-2 py-0.5 text-xs font-medium", stage.className)}>
                             {stage.label}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
-                          {lead.owner?.name ?? lead.owner?.email ?? "—"}
+                          {cliente.owner?.name ?? cliente.owner?.email ?? "—"}
                         </td>
                         <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
-                          {new Date(lead.created_at).toLocaleDateString("pt-BR")}
+                          {new Date(cliente.created_at).toLocaleDateString("pt-BR")}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-1 justify-end">
                             <button
-                              onClick={() => setModalLead(lead)}
+                              onClick={() => setModalCliente(cliente)}
                               className="rounded p-2 sm:p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-                              aria-label="Editar lead"
+                              aria-label="Editar cliente"
                             >
                               <Pencil className="h-3.5 w-3.5" />
                             </button>
                             <button
-                              onClick={() => setDeleteTarget(lead)}
+                              onClick={() => setDeleteTarget(cliente)}
                               className="rounded p-2 sm:p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                              aria-label="Excluir lead"
+                              aria-label="Excluir cliente"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
@@ -282,42 +252,24 @@ export function LeadsClient({
             </table>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between border-t border-border px-4 py-3">
               <p className="text-sm text-muted-foreground">
                 {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} de {totalCount}
               </p>
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => updateParams({ page: String(page - 1) })}
-                  disabled={page === 1}
-                  className="rounded p-1.5 text-muted-foreground hover:bg-accent disabled:opacity-40"
-                >
+                <button onClick={() => updateParams({ page: String(page - 1) })} disabled={page === 1} className="rounded p-1.5 text-muted-foreground hover:bg-accent disabled:opacity-40">
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   const p = Math.max(1, Math.min(page - 2, totalPages - 4)) + i
                   return (
-                    <button
-                      key={p}
-                      onClick={() => updateParams({ page: String(p) })}
-                      className={cn(
-                        "h-7 w-7 rounded text-sm font-medium",
-                        p === page
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-accent"
-                      )}
-                    >
+                    <button key={p} onClick={() => updateParams({ page: String(p) })} className={cn("h-7 w-7 rounded text-sm font-medium", p === page ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent")}>
                       {p}
                     </button>
                   )
                 })}
-                <button
-                  onClick={() => updateParams({ page: String(page + 1) })}
-                  disabled={page === totalPages}
-                  className="rounded p-1.5 text-muted-foreground hover:bg-accent disabled:opacity-40"
-                >
+                <button onClick={() => updateParams({ page: String(page + 1) })} disabled={page === totalPages} className="rounded p-1.5 text-muted-foreground hover:bg-accent disabled:opacity-40">
                   <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
@@ -326,38 +278,26 @@ export function LeadsClient({
         </div>
       </div>
 
-      {/* Create/Edit Modal */}
-      {modalLead !== null && (
-        <LeadModal
-          lead={modalLead === "new" ? null : modalLead}
+      {modalCliente !== null && (
+        <ClienteModal
+          cliente={modalCliente === "new" ? null : modalCliente}
           memberProfiles={memberProfiles}
-          storeOptions={storeOptions}
           currentUserId={currentUserId}
           isAdmin={isAdmin}
-          onClose={() => setModalLead(null)}
+          onClose={() => setModalCliente(null)}
         />
       )}
 
-      {/* Delete Confirm Dialog */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg">
-            <h3 className="mb-2 text-base font-semibold text-foreground">Excluir lead</h3>
+            <h3 className="mb-2 text-base font-semibold text-foreground">Excluir cliente</h3>
             <p className="mb-6 text-sm text-muted-foreground">
               Tem certeza que deseja excluir <strong>{deleteTarget.name}</strong>? Esta ação não pode ser desfeita.
             </p>
             <div className="flex gap-2">
-              <button
-                onClick={() => setDeleteTarget(null)}
-                className="flex-1 rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleteLoading}
-                className="flex-1 rounded-md bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground hover:opacity-90 disabled:opacity-50"
-              >
+              <button onClick={() => setDeleteTarget(null)} className="flex-1 rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent">Cancelar</button>
+              <button onClick={handleDelete} disabled={deleteLoading} className="flex-1 rounded-md bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground hover:opacity-90 disabled:opacity-50">
                 {deleteLoading ? "Excluindo..." : "Excluir"}
               </button>
             </div>
