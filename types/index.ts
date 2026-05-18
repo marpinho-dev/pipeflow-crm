@@ -122,6 +122,28 @@ export type LeadFormData = {
   installments?: InstallmentInput[]
 }
 
+export type ClienteFormData = LeadFormData
+
+export interface Store {
+  id: string
+  workspace_id: string
+  name: string
+  email?: string
+  phone?: string
+  referral_percentage: number
+  sales_volume: number
+  created_at: string
+  updated_at: string
+}
+
+export type StoreFormData = {
+  name: string
+  email?: string
+  phone?: string
+  referral_percentage: number
+  sales_volume: number
+}
+
 export interface Invite {
   id: string
   workspace_id: string

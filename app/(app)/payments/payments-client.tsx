@@ -11,9 +11,10 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts"
-import { ChevronLeft, ChevronRight, CheckCircle2, Lock } from "lucide-react"
+import { ChevronLeft, ChevronRight, CheckCircle2, Lock, Store } from "lucide-react"
 import { markInstallmentAsPaid } from "@/lib/actions/payments"
-import type { PaymentsPageData, InstallmentItem, MonthlyTotal } from "@/lib/actions/payments"
+import { markFeeAsPaidAction } from "@/lib/actions/stores"
+import type { PaymentsPageData, InstallmentItem, MonthlyTotal, StoreFeeItem } from "@/lib/actions/payments"
 
 const MONTH_NAMES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -37,34 +38,70 @@ function monthLabel(year: number, month: number) {
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-md border border-border bg-card px-3 py-2 shadow-md text-sm">
-      <p className="font-medium text-foreground">{label}</p>
-      <p className="text-primary">{formatBRL(payload[0]?.value ?? 0)}</p>
+    <div className="rounded-md border border-border bg-card px-3 py-2 shadow-md text-sm space-y-0.5">
+      <p className="font-medium text-foreground mb-1">{label}</p>
+      {payload.map((p: any) =>
+        p.value > 0 ? (
+          <p key={p.dataKey} style={{ color: p.fill }}>
+            {p.name}: {formatBRL(p.value)}
+          </p>
+        ) : null
+      )}
     </div>
   )
 }
 
-function ProjectionChart({ data }: { data: MonthlyTotal[] }) {
-  const chartData = data.map((d) => ({ name: monthLabel(d.year, d.month), total: d.total }))
+function ProjectionChart({
+  clientData,
+  storeData,
+  selectedMonth,
+  selectedYear,
+}: {
+  clientData: MonthlyTotal[]
+  storeData: MonthlyTotal[]
+  selectedMonth: number
+  selectedYear: number
+}) {
+  const chartData = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(selectedYear, selectedMonth - 1 + i, 1)
+    const year = d.getFullYear()
+    const month = d.getMonth() + 1
+    return {
+      name: monthLabel(year, month),
+      Clientes: clientData.find((m) => m.year === year && m.month === month)?.total ?? 0,
+      Lojas: storeData.find((m) => m.year === year && m.month === month)?.total ?? 0,
+    }
+  }).filter((d) => d.Clientes > 0 || d.Lojas > 0)
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 flex flex-col gap-4 h-full">
-      <div>
-        <h2 className="text-sm font-semibold text-foreground">Projeção de Recebimentos</h2>
-        <p className="text-xs text-muted-foreground mt-0.5">Parcelas pendentes — próximos 12 meses</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">Projeção de Recebimentos</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Valores pendentes — próximos 12 meses</p>
+        </div>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <span className="h-2.5 w-2.5 rounded-sm bg-primary inline-block" /> Clientes
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="h-2.5 w-2.5 rounded-sm bg-orange-500 inline-block" /> Lojas
+          </span>
+        </div>
       </div>
       {chartData.length === 0 ? (
         <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-          Nenhuma parcela pendente no período
+          Nenhum recebimento pendente no período
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={chartData} barSize={28}>
+          <BarChart data={chartData} barSize={20}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
             <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
             <YAxis tickFormatter={formatBRLShort} tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={60} />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--accent))" }} />
-            <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Clientes" stackId="a" fill="hsl(var(--primary))" radius={[0, 0, 0, 0]} />
+            <Bar dataKey="Lojas" stackId="a" fill="rgb(249,115,22)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       )}
@@ -74,32 +111,39 @@ function ProjectionChart({ data }: { data: MonthlyTotal[] }) {
 
 function MonthlyList({
   items,
+  storeFeeItems,
   onMarkAsPaid,
+  onMarkFeeAsPaid,
 }: {
   items: InstallmentItem[]
+  storeFeeItems: StoreFeeItem[]
   onMarkAsPaid: (id: string) => Promise<void>
+  onMarkFeeAsPaid: (id: string, storeId: string) => Promise<void>
 }) {
   const [paying, setPaying] = useState<string | null>(null)
 
   async function handlePay(id: string) {
     setPaying(id)
-    try {
-      await onMarkAsPaid(id)
-    } finally {
-      setPaying(null)
-    }
+    try { await onMarkAsPaid(id) } finally { setPaying(null) }
   }
+
+  async function handleFeePay(id: string, storeId: string) {
+    setPaying(id)
+    try { await onMarkFeeAsPaid(id, storeId) } finally { setPaying(null) }
+  }
+
+  const hasItems = items.length > 0 || storeFeeItems.length > 0
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 flex flex-col gap-4 h-full">
       <div>
-        <h2 className="text-sm font-semibold text-foreground">Parcelas do Mês</h2>
-        <p className="text-xs text-muted-foreground mt-0.5">Pendentes e atrasadas</p>
+        <h2 className="text-sm font-semibold text-foreground">Recebimentos do Mês</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">Pendentes e atrasados</p>
       </div>
 
-      {items.length === 0 ? (
+      {!hasItems ? (
         <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-          Nenhuma parcela para este mês
+          Nenhum recebimento para este mês
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto space-y-2 pr-1">
@@ -132,6 +176,41 @@ function MonthlyList({
               >
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {paying === item.id ? "..." : "Pago"}
+              </button>
+            </div>
+          ))}
+
+          {storeFeeItems.map((fee) => (
+            <div
+              key={fee.id}
+              className={`flex items-start justify-between gap-3 rounded-lg border p-3 ${
+                fee.is_overdue ? "border-destructive/30 bg-destructive/5" : "border-orange-500/20 bg-orange-500/5"
+              }`}
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <Store className="h-3 w-3 text-orange-500 flex-shrink-0" />
+                  <p className="text-sm font-medium text-foreground truncate">{fee.store_name}</p>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Fee · {fee.client_name} · {new Date(fee.payment_date + "T00:00:00").toLocaleDateString("pt-BR")}
+                </p>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">{formatBRL(fee.fee_amount)}</span>
+                  {fee.is_overdue && (
+                    <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
+                      Atrasado
+                    </span>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => handleFeePay(fee.id, fee.store_id)}
+                disabled={paying === fee.id}
+                className="flex-shrink-0 flex items-center gap-1.5 rounded-md bg-orange-500/10 px-2.5 py-1.5 text-xs font-medium text-orange-600 hover:bg-orange-500/20 disabled:opacity-50 transition-colors dark:text-orange-400"
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {paying === fee.id ? "..." : "Recebido"}
               </button>
             </div>
           ))}
@@ -239,6 +318,11 @@ export function PaymentsClient({
     await markInstallmentAsPaid(installmentId)
   }
 
+  async function handleMarkFeeAsPaid(purchaseId: string, storeId: string) {
+    await markFeeAsPaidAction(purchaseId, storeId)
+    router.refresh()
+  }
+
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Month selector */}
@@ -262,8 +346,18 @@ export function PaymentsClient({
 
       {/* Linha 1: Projeção + Lista do mês */}
       <div className="grid grid-cols-1 lg:grid-cols-[65fr_35fr] gap-6" style={{ minHeight: 320 }}>
-        <ProjectionChart data={data.projectionMonths} />
-        <MonthlyList items={data.monthlyList} onMarkAsPaid={handleMarkAsPaid} />
+        <ProjectionChart
+          clientData={data.projectionMonths}
+          storeData={data.storeFeesProjection}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+        />
+        <MonthlyList
+          items={data.monthlyList}
+          storeFeeItems={data.storeFeesMonthly}
+          onMarkAsPaid={handleMarkAsPaid}
+          onMarkFeeAsPaid={handleMarkFeeAsPaid}
+        />
       </div>
 
       {/* Linha 2: Histórico */}

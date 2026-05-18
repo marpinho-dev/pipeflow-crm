@@ -262,7 +262,7 @@
 - [ ] Página `/activities`: layout com cards de resumo no topo + lista filtrada
 - [ ] Cards de resumo: contagem de atividades Atrasadas, Hoje e Esta Semana (clicáveis, filtram a lista)
 - [ ] Abas / filtro de período: **Atrasadas** · **Hoje** · **Esta semana** · **Todas**
-- [ ] Cada item da lista exibe: ícone de tipo, descrição, lead vinculado (link), responsável, data/hora agendada
+- [ ] Cada item da lista exibe: ícone de tipo, descrição, lead vinculado (link), wresponsável, data/hora agendada
 - [ ] Botão "Concluir" por atividade: marca `completed = true` e `completed_at = now()` via Server Action
 - [ ] Atividades concluídas ficam com estilo riscado/esmaecido; toggle para exibir/ocultar concluídas
 - [ ] Filtros: por tipo (ligação, e-mail, reunião, nota) e por responsável

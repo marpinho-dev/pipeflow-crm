@@ -1,12 +1,12 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import { LeadsClient } from "./leads-client"
+import { ClientesClient } from "./clientes-client"
 import { WORKSPACE_COOKIE } from "@/lib/constants"
 
 const PAGE_SIZE = 20
 
-export default async function LeadsPage({
+export default async function ClientesPage({
   searchParams,
 }: {
   searchParams: { q?: string; owner?: string; page?: string }
@@ -21,7 +21,6 @@ export default async function LeadsPage({
   const page = Math.max(1, parseInt(searchParams.page ?? "1"))
   const offset = (page - 1) * PAGE_SIZE
 
-  // Build filtered query
   let query: any = supabase
     .from("leads")
     .select("*", { count: "exact" })
@@ -34,8 +33,8 @@ export default async function LeadsPage({
   if (searchParams.owner) query = query.eq("owner_id", searchParams.owner)
 
   const [
-    { data: leads, count },
-    { count: totalLeadCount },
+    { data: clientes, count },
+    { count: totalClienteCount },
     { data: members },
     { data: workspace },
   ] = await Promise.all([
@@ -45,38 +44,35 @@ export default async function LeadsPage({
     supabase.from("workspaces").select("plan").eq("id", workspaceId).single(),
   ])
 
-  // Fetch deal stage for each lead (most recent deal)
-  const leadIds = (leads ?? []).map((l: { id: string }) => l.id)
-  const { data: dealsForLeads } = leadIds.length > 0
+  const clienteIds = (clientes ?? []).map((l: { id: string }) => l.id)
+  const { data: dealsForClientes } = clienteIds.length > 0
     ? await supabase
         .from("deals")
         .select("lead_id, stage")
-        .in("lead_id", leadIds)
+        .in("lead_id", clienteIds)
         .eq("workspace_id", workspaceId)
         .order("created_at", { ascending: false })
     : { data: [] }
 
-  const leadStageMap = new Map<string, string>()
-  for (const deal of dealsForLeads ?? []) {
-    if (!leadStageMap.has(deal.lead_id)) leadStageMap.set(deal.lead_id, deal.stage)
+  const clienteStageMap = new Map<string, string>()
+  for (const deal of dealsForClientes ?? []) {
+    if (!clienteStageMap.has(deal.lead_id)) clienteStageMap.set(deal.lead_id, deal.stage)
   }
 
-  // Fetch profiles for lead owners
-  const ownerIds = Array.from(new Set((leads ?? []).map((l: { owner_id: string }) => l.owner_id)))
+  const ownerIds = Array.from(new Set((clientes ?? []).map((l: { owner_id: string }) => l.owner_id)))
   const { data: ownerProfiles } = ownerIds.length > 0
     ? await supabase.from("profiles").select("id, name, email").in("id", ownerIds)
     : { data: [] }
 
-  // Fetch profiles for workspace members (owner filter dropdown)
   const memberUserIds = (members ?? []).map((m: { user_id: string }) => m.user_id)
   const { data: memberProfiles } = memberUserIds.length > 0
     ? await supabase.from("profiles").select("id, name, email").in("id", memberUserIds)
     : { data: [] }
 
-  const leadsWithOwners = (leads ?? []).map((l: { id: string; owner_id: string }) => ({
+  const clientesWithOwners = (clientes ?? []).map((l: { id: string; owner_id: string }) => ({
     ...l,
     owner: ownerProfiles?.find((p) => p.id === l.owner_id) ?? null,
-    stage: leadStageMap.get(l.id) ?? "novo_cliente",
+    stage: clienteStageMap.get(l.id) ?? "novo_cliente",
   }))
 
   const isAdmin = (members ?? []).some(
@@ -84,10 +80,10 @@ export default async function LeadsPage({
   )
 
   return (
-    <LeadsClient
-      leads={leadsWithOwners}
+    <ClientesClient
+      clientes={clientesWithOwners}
       totalCount={count ?? 0}
-      totalLeadCount={totalLeadCount ?? 0}
+      totalClienteCount={totalClienteCount ?? 0}
       page={page}
       pageSize={PAGE_SIZE}
       memberProfiles={memberProfiles ?? []}

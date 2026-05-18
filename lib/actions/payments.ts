@@ -29,9 +29,21 @@ export type LockedSummary = {
   client_count: number
 }
 
+export type StoreFeeItem = {
+  id: string
+  store_id: string
+  store_name: string
+  client_name: string
+  fee_amount: number
+  payment_date: string
+  is_overdue: boolean
+}
+
 export type PaymentsPageData = {
   projectionMonths: MonthlyTotal[]
+  storeFeesProjection: MonthlyTotal[]
   monthlyList: InstallmentItem[]
+  storeFeesMonthly: StoreFeeItem[]
   historyPaid: MonthlyTotal[]
   historyOverdue: MonthlyTotal[]
   locked: LockedSummary
@@ -71,7 +83,9 @@ export async function getPaymentsPageData(
   if (!workspaceId) {
     return {
       projectionMonths: [],
+      storeFeesProjection: [],
       monthlyList: [],
+      storeFeesMonthly: [],
       historyPaid: [],
       historyOverdue: [],
       locked: { total_value: 0, client_count: 0 },
@@ -95,11 +109,12 @@ export async function getPaymentsPageData(
 
   const activeLeadIds = Array.from(new Set((activeDeals ?? []).map((d) => d.lead_id as string)))
 
-  // Step 2: fetch in parallel — installments for active leads + all leads with project_value
+  // Step 2: fetch in parallel — installments for active leads + all leads with project_value + store fees
   const [
     { data: pendingInstallments },
     { data: paidInstallments },
     { data: allLeadsWithValue },
+    { data: pendingStoreFees },
   ] = await Promise.all([
     activeLeadIds.length > 0
       ? supabase
@@ -128,6 +143,14 @@ export async function getPaymentsPageData(
       .eq("workspace_id", workspaceId)
       .not("project_value", "is", null)
       .gt("project_value", 0),
+
+    // Pending store fees
+    supabase
+      .from("store_purchases")
+      .select("id, store_id, client_name, fee_amount, purchase_date, stores(name)")
+      .eq("workspace_id", workspaceId)
+      .eq("fee_status", "pending")
+      .order("purchase_date", { ascending: true }),
   ])
 
   // Step 3: locked = leads with project_value that are NOT in the active flow
@@ -230,5 +253,54 @@ export async function getPaymentsPageData(
     historyOverdue.push({ year: d.getFullYear(), month: d.getMonth() + 1, total: historyOverdueMap.get(key) ?? 0 })
   }
 
-  return { projectionMonths, monthlyList, historyPaid, historyOverdue, locked }
+  // Step 7: store fees projection (pending fees grouped by month, next 12 months)
+  const storeFeesMap = new Map<string, number>()
+  for (const fee of pendingStoreFees ?? []) {
+    const d = new Date(fee.purchase_date + "T00:00:00")
+    if (d < projectionStart || d > projectionEnd) continue
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}`
+    storeFeesMap.set(key, (storeFeesMap.get(key) ?? 0) + Number(fee.fee_amount))
+  }
+  const storeFeesProjection: MonthlyTotal[] = []
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(selectedYear, selectedMonth - 1 + i, 1)
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}`
+    if (storeFeesMap.has(key)) {
+      storeFeesProjection.push({ year: d.getFullYear(), month: d.getMonth() + 1, total: storeFeesMap.get(key)! })
+    }
+  }
+
+  // Step 8: store fees monthly list — selected month + overdue
+  function mapStoreFee(fee: any, overdue: boolean): StoreFeeItem {
+    const store = fee.stores as unknown as { name: string } | null
+    return {
+      id: fee.id,
+      store_id: fee.store_id,
+      store_name: store?.name ?? "—",
+      client_name: fee.client_name,
+      fee_amount: Number(fee.fee_amount),
+      payment_date: fee.purchase_date,
+      is_overdue: overdue,
+    }
+  }
+
+  const monthlyStoreFees = (pendingStoreFees ?? [])
+    .filter((fee) => {
+      const d = new Date(fee.purchase_date + "T00:00:00")
+      return d.getFullYear() === selectedYear && d.getMonth() + 1 === selectedMonth
+    })
+    .map((fee) => mapStoreFee(fee, new Date(fee.purchase_date + "T00:00:00") < today))
+
+  const overdueStoreFees = (pendingStoreFees ?? [])
+    .filter((fee) => {
+      const d = new Date(fee.purchase_date + "T00:00:00")
+      return d < today && !(d.getFullYear() === selectedYear && d.getMonth() + 1 === selectedMonth)
+    })
+    .map((fee) => mapStoreFee(fee, true))
+
+  const storeFeesMonthly = [...overdueStoreFees, ...monthlyStoreFees].sort(
+    (a, b) => new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime()
+  )
+
+  return { projectionMonths, storeFeesProjection, monthlyList, storeFeesMonthly, historyPaid, historyOverdue, locked }
 }

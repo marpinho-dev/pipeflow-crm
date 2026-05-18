@@ -1,17 +1,15 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function LeadDetailLoading() {
+export default function ClienteDetailLoading() {
   return (
     <>
-      {/* Breadcrumb */}
       <div className="flex h-14 items-center gap-3 border-b border-border bg-background px-4 sm:px-6">
-        <Skeleton className="h-4 w-14" />
+        <Skeleton className="h-4 w-16" />
         <span className="text-muted-foreground">/</span>
         <Skeleton className="h-4 w-32" />
       </div>
 
       <div className="flex flex-col overflow-auto md:flex-row md:h-[calc(100vh-3.5rem-3.5rem)] md:overflow-hidden">
-        {/* Left panel */}
         <aside className="w-full shrink-0 border-b border-border bg-card p-5 space-y-4 md:w-80 md:border-b-0 md:border-r">
           <div className="flex items-start justify-between">
             <div className="space-y-1.5">
@@ -31,7 +29,6 @@ export default function LeadDetailLoading() {
           </div>
         </aside>
 
-        {/* Right panel */}
         <main className="flex-1 p-4 sm:p-6 space-y-4">
           <div className="flex items-center justify-between">
             <Skeleton className="h-4 w-20" />
